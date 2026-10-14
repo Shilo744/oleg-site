@@ -1,0 +1,33 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, content, weeks } = Astro.props;
+// "5,700 Kč total — 4-week pilot" becomes a figure, a currency and a term, so the Czech page can show the figure large.
+const [, figure = market.pilotPrice, currency = "", term = ""] = market.pilotPrice.match(/^(\S+)(?: (Kč))?\s*(.*)$/) || [];
+---
+
+<section class="section white" id="pilot">
+  <div class="container pilot-grid">
+    <div class="pilot-copy" data-reveal>
+      <div class="eyebrow">{content?.eyebrow || "A focused start"}</div><h2>
+        {content ? content.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>Founding<br />Contractor Pilot.</>}
+      </h2><p>
+        {content?.body || <>We’re onboarding a small number of {market.adjective} commercial HVAC contractors. Put
+        the intelligence to work for four weeks, then decide whether it earns a
+        place in your business.</>}
+      </p>
+      {weeks && (
+        <div class="pilot-weeks" aria-hidden="true">
+          <div class="weeks">
+            {[1, 2, 3, 4].map((n) => <div class="wk" style={`--w:${n - 1}`}><b>{weeks.week} {n}</b><div class="sqs"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i></div></div>)}
+          </div>
+          <div class="deep"><span>{weeks.deep}</span></div>
+        </div>
+      )}
+    </div><div class="pilot-offer" data-reveal>
+      <p class="pilot-price"><span class="pilot-amount">{figure}{currency && <span class="pilot-cur"> {currency}</span>}</span>{term && <> <span class="pilot-term">{term}</span></>}</p><ul class="checks">
+        {(content?.features || market.pilotFeatures).map((feature) => <li>{feature}</li>)}
+      </ul><a class="button button-primary" href={marketPath(market, "/contact/")}
+        >{content?.cta || "Discuss the pilot"} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,172 @@
+---
+import { marketPath } from "../data/markets.js";
+import { contoursUrl, scenesUrl } from "../lib/map-assets.js";
+import { compactPath } from "../lib/path-tools.js";
+const { market, labels = {} } = Astro.props;
+const { map } = market;
+
+// A calmer outline for the map: drop fine detail, then round the corners.
+function stylise(d, tolerance = 1.6) {
+  const distance = ([x, y], [x1, y1], [x2, y2]) => {
+    const dx = x2 - x1, dy = y2 - y1, length = Math.hypot(dx, dy);
+    return length ? Math.abs(dy * x - dx * y + x2 * y1 - y2 * x1) / length : Math.hypot(x - x1, y - y1);
+  };
+  const simplify = (points) => {
+    if (points.length < 3) return points;
+    let far = 0, index = 0;
+    for (let i = 1; i < points.length - 1; i++) {
+      const gap = distance(points[i], points[0], points.at(-1));
+      if (gap > far) { far = gap; index = i; }
+    }
+    if (far <= tolerance) return [points[0], points.at(-1)];
+    return [...simplify(points.slice(0, index + 1)).slice(0, -1), ...simplify(points.slice(index))];
+  };
+  const round = (ring) => {
+    let points = ring;
+    for (let pass = 0; pass < 2; pass++) {
+      const next = [];
+      for (let i = 0; i < points.length; i++) {
+        const [x1, y1] = points[i], [x2, y2] = points[(i + 1) % points.length];
+        next.push([x1 * 0.75 + x2 * 0.25, y1 * 0.75 + y2 * 0.25], [x1 * 0.25 + x2 * 0.75, y1 * 0.25 + y2 * 0.75]);
+      }
+      points = next;
+    }
+    return points;
+  };
+  return d.split("M").filter(Boolean).map((ring) => {
+    const points = ring.replace("Z", "").split("L").map((pair) => pair.split(",").map(Number));
+    const middle = Math.floor(points.length / 2);
+    const closed = [...simplify(points.slice(0, middle + 1)).slice(0, -1), ...simplify(points.slice(middle))];
+    if (closed.length < 4) return "";
+    return "M" + round(closed).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join("L") + "Z";
+  }).join("");
+}
+const rich = true;
+// The outline is smoothed first, then written in a short form (relative coordinates, no points the eye cannot see).
+const landPath = compactPath(stylise(map.path, map.simplify), 0.05);
+const points = Object.fromEntries(map.locations.map(([city, lon, lat]) => [city, map.projection([Number(lon), Number(lat)])]));
+const [vx, vy, vw, vh] = map.viewBox.split(" ").map(Number);
+// The contour lines and the city models are separate files. The browser loads and caches them on its own.
+const contourUrl = contoursUrl(market.id);
+const sceneUrl = scenesUrl(market.id);
+
+// Curved signal lines from the featured city to the other demo cities,
+// and the numbers the coordinate readout needs to turn a pointer position into lat/lon.
+const demoCities = map.locations.map(([city]) => city).filter((city) => map.demos[city]);
+const links = rich
+  ? demoCities.filter((city) => city !== map.featuredCity).map((city) => {
+      const [x1, y1] = points[map.featuredCity];
+      const [x2, y2] = points[city];
+      const dx = x2 - x1, dy = y2 - y1, length = Math.hypot(dx, dy) || 1;
+      let nx = -dy / length, ny = dx / length;
+      if (ny > 0) { nx = -nx; ny = -ny; }
+      const bend = length * 0.2;
+      return { city, d: `M${x1.toFixed(1)},${y1.toFixed(1)}Q${((x1 + x2) / 2 + nx * bend).toFixed(1)},${((y1 + y2) / 2 + ny * bend).toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}` };
+    })
+  : [];
+// Rich preview cards. Each demo city has a template with its drawing, facts and checks.
+const details = rich && map.details ? map.details : null;
+// 51.5 N and -0.12 E become "51.500° N · 0.120° W".
+const format = (lat, lon) => `${Math.abs(lat).toFixed(3)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(3)}° ${lon < 0 ? "W" : "E"}`;
+const coordsOf = (city) => {
+  const [, lon, lat] = map.locations.find(([name]) => name === city);
+  return format(Number(lat), Number(lon));
+};
+const valueOf = (demo) => demo[1].match(/^(?:[£€$]\s?[\d.,]+m?|[\d.,]+m? ?Kč)/)?.[0] ?? null;
+const text = {
+  label: "Illustrative opportunity", sector: "Sector", value: "Total project value", valueNone: "Not stated", scope: "Potential scope",
+  checks: "What to check first", model: "Illustrative model", note: "Prompts to investigate. Not specifications.", chip: "Illustrative only", link: "Read the sample brief",
+  ...labels,
+};
+const [[, lonA, latA], [, lonB, latB]] = [map.locations[0], map.locations.at(-1)];
+const [pa, pb] = [points[map.locations[0][0]], points[map.locations.at(-1)[0]]];
+const scaleX = (pb[0] - pa[0]) / (lonB - lonA), scaleY = (pb[1] - pa[1]) / (latB - latA);
+const readout = {
+  ax: scaleX, bx: pa[0] - scaleX * lonA, ay: scaleY, by: pa[1] - scaleY * latA,
+  text: coordsOf(map.featuredCity),
+};
+---
+
+<div class={`map-panel${rich ? " map-rich" : ""}`} data-market={market.id} data-shape={vh > vw ? "portrait" : "landscape"} data-scenes={sceneUrl} aria-label={`Illustrative ${market.countryLong} commercial project map`}>
+  <div class="map-heading">
+    <span>{market.country.toUpperCase()} OPPORTUNITY MAP</span><span>ILLUSTRATIVE PROJECTS</span>
+  </div>
+  <div class="map-stage">
+    <svg class="opportunity-map" viewBox={map.viewBox} role="group" aria-label={`${market.countryLong} with illustrative opportunity markers`}>
+      {rich && (
+        <defs>
+          <clipPath id="map-land-clip"><use href="#map-land" /></clipPath>
+          <linearGradient id="land-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" /><stop offset="1" stop-color="#f0f1f1" /></linearGradient>
+        </defs>
+      )}
+      <path id="map-land" class="map-land" d={landPath} pathLength="1"></path>
+      <g class="map-contours" clip-path="url(#map-land-clip)" aria-hidden="true">
+        <image href={contourUrl} x={vx} y={vy} width={vw} height={vh} preserveAspectRatio="none" />
+      </g>
+      {rich && <g class="map-links" aria-hidden="true">{links.map(({ d, city }, k) => <path class="map-link" d={d} data-to={city} data-flow="9 10" style={`--i:${k}`} />)}</g>}
+      {details && <g class="map-cross" aria-hidden="true"><line class="cv" /><line class="ch" /></g>}
+      {map.labels.map(([label, x, y]) => <text class="map-label" x={x} y={y}>{label}</text>)}
+      {map.locations.map(([city, lon, lat]) => {
+        const [x, y] = map.projection([Number(lon), Number(lat)]);
+        const demo = map.demos[city];
+        return demo ? (
+          <g class="map-marker" style={`--i:${demoCities.indexOf(city)}`} tabindex="0" role="button"
+            aria-label={`Preview illustrative ${demo[0].toLowerCase()} in ${city}`}
+            aria-pressed="false" aria-controls="map-preview"
+            data-city={city} data-label={demo[0]} data-cx={x} data-cy={y} data-title={demo[0]} data-value={demo[1]} data-scope={demo[2]}
+            data-coords={details ? coordsOf(city) : undefined}>
+            {details && <><circle class="map-ripple" cx={x} cy={y} r="6" /><circle class="map-ripple r2" cx={x} cy={y} r="6" /></>}
+            {city === map.featuredCity && <circle class="map-ring" cx={x} cy={y} r="6" />}
+            <circle class="map-hit" cx={x} cy={y} r="19" />
+            <circle cx={x} cy={y} r="6" />
+          </g>
+        ) : (
+          <circle class="map-dot" data-city={city} data-label="Commercial project signals" data-cx={x} data-cy={y} cx={x} cy={y} r="3.6" fill="#d74c43" stroke="#f7f7f5" stroke-width="1.6" aria-hidden="true" />
+        );
+      })}
+      {rich && map.locations.filter(([city]) => map.demos[city]).map(([city]) => {
+        const [x, y] = points[city];
+        const left = (map.labelsLeft || []).includes(city) || (!map.labelsLeft && x > vx + vw * 0.7);
+        return <text class="map-city-label" data-for={city} x={left ? x - 13 : x + 13} y={y + 5} text-anchor={left ? "end" : "start"} aria-hidden="true">{city}</text>;
+      })}
+    </svg>
+    <div class="map-lens" aria-hidden="true" inert>
+      <div class="lens-glass"><div class="lens-map"></div><div class="lens-city"></div></div>
+    </div>
+  </div>
+  {details && Object.entries(details).map(([city, detail]) => {
+    const demo = map.demos[city];
+    const value = valueOf(demo);
+    return (
+      <template data-detail={city}>
+        <div class="pv-art" aria-hidden="true" data-scene></div>
+        <div class="pv-main">
+          <div class="preview-label">{text.label}</div>
+          <h3>{demo[0]}</h3>
+          <p class="pv-where">{city} · {coordsOf(city)}</p>
+          <dl class="pv-facts">
+            <div style="--k:0"><dt>{text.sector}</dt><dd>{detail.sector}</dd></div>
+            <div style="--k:1"><dt>{text.value}</dt><dd>{value || text.valueNone}</dd></div>
+            <div class="wide" style="--k:2"><dt>{text.scope}</dt><dd>{demo[2]}</dd></div>
+          </dl>
+        </div>
+        <div class="pv-side">
+          <h4 class="pv-sub">{text.checks}</h4>
+          <ul class="pv-checks">{detail.checks.map((item, k) => <li style={`--k:${k + 2}`}>{item}</li>)}</ul>
+          <p class="pv-note">{text.note}</p>
+        </div>
+        <div class="pv-foot" style="--k:3"><span class="pv-chip">{text.chip}</span>{detail.href && <a class="pv-link" href={marketPath(market, detail.href)}>{text.link} <span aria-hidden="true">↗</span></a>}</div>
+      </template>
+    );
+  })}
+  <div class={`map-preview${details ? " pv-card" : ""}`} id="map-preview" role={details ? "region" : undefined} aria-live={details ? "polite" : undefined} aria-label={details ? "Illustrative opportunity preview" : undefined} hidden>
+    <button class="preview-close" aria-label="Close opportunity preview">×</button>
+    <div class={details ? "pc-compact" : undefined}>
+      <div class="preview-label">Illustrative opportunity</div>
+      <h3 data-preview-title></h3><p data-preview-city></p><p data-preview-value></p><p data-preview-scope></p>
+    </div>
+    {details && <div class="pv" data-preview-body></div>}
+  </div>
+  <div class="map-key"><i></i><span>Commercial project signals</span><span aria-hidden="true">·</span><span>Explore the larger markers</span></div>
+  {rich && <div class="map-readout" aria-hidden="true" data-ax={readout.ax} data-bx={readout.bx} data-ay={readout.ay} data-by={readout.by} data-default={readout.text}>{readout.text}</div>}
+</div>

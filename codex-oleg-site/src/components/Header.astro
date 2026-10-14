@@ -1,0 +1,68 @@
+---
+import Logo from "./Logo.astro";
+import { markets, marketPath, equivalentMarketPath } from "../data/markets.js";
+const { market, pathname, content = {}, design } = Astro.props;
+const home = marketPath(market);
+const labels = {
+  howItWorks: content.howItWorks || "How it works",
+  sample: content.sample || "Sample opportunity",
+  pilot: content.pilot || "The pilot",
+  about: content.about || "About",
+  contact: content.contact || "Contact",
+  menu: content.menu || "Menu",
+  countryLabel: content.countryLabel || "Choose country",
+};
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <Logo href={home} variant={design} /><button
+      class="menu-toggle"
+      aria-expanded="false"
+      aria-controls="navigation">{labels.menu} <span aria-hidden="true">☰</span></button
+    ><nav id="navigation" aria-label="Main navigation">
+      <a href={`${home}#how-it-works`}>{labels.howItWorks}</a><a href={marketPath(market, "/sample-opportunity/")}
+        >{labels.sample}</a
+      ><a href={`${home}#pilot`}>{labels.pilot}</a><a href={marketPath(market, "/about/")}>{labels.about}</a><div class="country-switcher" aria-label={labels.countryLabel}>
+        <a href={equivalentMarketPath(markets.uk, pathname)} aria-current={market.id === "uk" ? "page" : undefined}>UK</a>
+        <span aria-hidden="true">/</span>
+        <a href={equivalentMarketPath(markets.cz, pathname)} aria-current={market.id === "cz" ? "page" : undefined}>CZ</a>
+        <span aria-hidden="true">/</span>
+        <a href={equivalentMarketPath(markets.de, pathname)} aria-current={market.id === "de" ? "page" : undefined}>DE</a>
+      </div><a
+        class="nav-contact"
+        href={marketPath(market, "/contact/")}>{labels.contact} <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>
+<script>
+  const button = document.querySelector<HTMLButtonElement>(".menu-toggle");
+  const nav = document.querySelector<HTMLElement>("#navigation");
+  if (button && nav) {
+    document.documentElement.classList.add("has-js");
+    const close = () => {
+      button.setAttribute("aria-expanded", "false");
+      nav.classList.remove("is-open");
+    };
+    button.addEventListener("click", () => {
+      const open = button.getAttribute("aria-expanded") !== "true";
+      button.setAttribute("aria-expanded", String(open));
+      nav.classList.toggle("is-open", open);
+    });
+    nav.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a")) close();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        button.getAttribute("aria-expanded") === "true"
+      ) {
+        close();
+        button.focus();
+      }
+    });
+    document.addEventListener("click", (event) => {
+      if (!(event.target as HTMLElement).closest(".site-header")) close();
+    });
+  }
+</script>

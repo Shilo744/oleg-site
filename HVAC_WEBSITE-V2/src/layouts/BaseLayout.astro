@@ -1,0 +1,75 @@
+---
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/atlas-map.css";
+import "../styles/atlas-design.css";
+import "../styles/atlas-visuals.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import LogoScroll from "../components/LogoScroll.astro";
+import { site } from "../data/site.js";
+import { getMarket } from "../data/markets.js";
+import latinFont from "../assets/fonts/manrope-latin-wght-normal.woff2?url";
+import latinExtFont from "../assets/fonts/manrope-latin-ext-wght-normal.woff2?url";
+const { title, description, marketId = "uk", content } = Astro.props;
+const market = getMarket(marketId);
+const canonical = site.url ? new URL(Astro.url.pathname, site.url).href : null;
+// The first font file every page needs. Czech pages need the second one too.
+const fontLatin = latinFont;
+const fontExt = market.id === "cz" ? latinExtFont : null;
+---
+
+<!doctype html>
+<html lang="en">
+  <head
+    ><meta charset="UTF-8" /><meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    /><meta name="theme-color" content="#ffffff" /><link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />{fontExt && <link rel="preload" href={fontExt} as="font" type="font/woff2" crossorigin />}<title>{title} | Atlas</title><meta
+      name="description"
+      content={description}
+    /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />{
+      canonical && <link rel="canonical" href={canonical} />
+    }<meta property="og:title" content={`${title} | Atlas`} /><meta
+      property="og:description"
+      content={description}
+    /><meta property="og:type" content="website" /><meta
+      property="og:locale"
+      content={market.locale}
+    />{canonical && <meta property="og:url" content={canonical} />}{
+      site.url && (
+        <>
+          <>
+            <meta
+              property="og:image"
+              content={new URL("/og.png", site.url).href}
+            />
+            <meta
+              property="og:image:alt"
+              content={`Atlas — ${market.descriptor}`}
+            />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta
+              name="twitter:image"
+              content={new URL("/og.png", site.url).href}
+            />
+          </>
+        </>
+      )
+    }<meta
+      name="robots"
+      content={site.url ? "index, follow" : "noindex, nofollow"}
+    />{
+      <>
+        <script is:inline set:html={`document.documentElement.classList.add("js");setTimeout(function(){if(!document.documentElement.classList.contains("motion-ready"))document.documentElement.classList.add("reveal-off")},2500)`}></script>
+        <style is:inline set:html={`@view-transition{navigation:auto}`}></style>
+        <script type="speculationrules" is:inline set:html={JSON.stringify({ prefetch: [{ where: { href_matches: "/*" }, eagerness: "moderate" }] })}></script>
+      </>
+    }</head
+  ><body data-market={market.id}
+    ><a class="skip-link" href="#main">Skip to content</a><Header market={market} pathname={Astro.url.pathname} content={content?.navigation} /><main
+      id="main"
+    >
+      <slot />
+    </main><Footer market={market} content={content?.footer} /><LogoScroll /><script>import "../scripts/site.ts";</script></body>
+</html>

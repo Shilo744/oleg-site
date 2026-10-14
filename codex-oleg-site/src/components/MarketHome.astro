@@ -1,0 +1,35 @@
+---
+import Hero from "./Hero.astro";
+import OpportunityCard from "./OpportunityCard.astro";
+import HowItWorks from "./HowItWorks.astro";
+import PilotSection from "./PilotSection.astro";
+import FounderSection from "./FounderSection.astro";
+import FinalCTA from "./FinalCTA.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+const deliverables = content?.deliverables.items || [
+  { number: "01", title: "Qualified projects", body: "Commercial projects selected for their potential HVAC relevance and fit with your business." },
+  { number: "02", title: "Project intelligence", body: "Timing, potential scope, organisations involved and procurement signals, brought together in one clear brief." },
+  { number: "03", title: "Your next action", body: "A practical recommendation for what to investigate, who to approach and what still needs confirming." },
+];
+---
+
+<Hero market={market} content={content?.hero} />
+<section class="section white">
+  <div class="container">
+    <div class="section-heading"><div><div class="eyebrow">{content?.deliverables.eyebrow || "What you receive"}</div><h2>{content ? content.deliverables.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>Less searching.<br />More worth pursuing.</>}</h2></div><p>{content?.deliverables.intro || "A small number of relevant opportunities, with the context you need to decide where to spend your time."}</p></div>
+    <div class="three-columns">
+      {deliverables.map(({ number, title, body }) => <article class="benefit"><span class="number">{number} /</span><h3>{title}</h3><p>{body}</p></article>)}
+    </div>
+  </div>
+</section>
+<HowItWorks content={content?.process} />
+<section class="section" id="sample">
+  <div class="container sample-grid">
+    <div class="sample-copy"><div class="eyebrow">{content?.sample.eyebrow || "See the intelligence"}</div><h2>{content ? content.sample.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>A project signal.<br />A clearer way in.</>}</h2>{content ? content.sample.paragraphs.map((paragraph) => <p>{paragraph}</p>) : <><p>What makes a project worth a closer look? See how an opportunity brief connects potential HVAC scope with the questions that matter commercially.</p><p>This illustrative hotel restoration shows the format and depth you can expect.</p></>}<a class="text-link" href={marketPath(market, "/sample-opportunity/")}>{content?.sample.link || "View full sample report"} <span aria-hidden="true">↗</span></a></div>
+    <OpportunityCard market={market} content={content?.card} />
+  </div>
+</section>
+<PilotSection market={market} content={content?.pilot} />
+<FounderSection market={market} content={content?.founder} />
+<FinalCTA market={market} content={content?.finalCta} />

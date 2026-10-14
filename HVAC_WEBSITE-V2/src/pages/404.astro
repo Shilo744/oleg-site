@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ukContent } from "../data/content.js";
+---
+
+<BaseLayout
+  content={ukContent}
+  title="Page not found"
+  description="This Atlas page could not be found. Return to the homepage or explore our sample opportunity."
+  ><section class="section">
+    <div class="container">
+      <div class="eyebrow">404 / Page not found</div><h1>
+        This one is<br />off the map.
+      </h1><p class="muted not-found-copy">
+        The page may have moved, or the link may be incorrect.
+      </p><div class="buttons">
+        <a class="button button-primary" href="/">Back to Atlas →</a><a
+          class="button button-secondary"
+          href="/sample-opportunity/">View sample opportunity ↗</a>
+      </div>
+    </div>
+  </section></BaseLayout
+>

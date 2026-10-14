@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MarketAbout from "../../components/MarketAbout.astro";
+import { markets } from "../../data/markets.js";
+import { czechContent } from "../../data/content.js";
+---
+<BaseLayout marketId="cz" content={czechContent} title="About Atlas — founder-led Czech project research" description="Learn how Atlas applies business intelligence and information-monitoring experience to project research for Czech commercial HVAC contractors.">
+  <MarketAbout market={markets.cz} content={czechContent.about} finalCta={czechContent.home.finalCta} visuals={czechContent.visuals} />
+</BaseLayout>

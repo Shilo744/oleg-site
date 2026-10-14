@@ -1,0 +1,18 @@
+---
+import { ukDesigns } from '../../data/uk-designs.js';
+import UKDesignLayout from '../../layouts/UKDesignLayout.astro';
+---
+<UKDesignLayout design={{ id: 'gallery', name: 'Three UK designs' }}>
+  <main id="main" class="design-gallery wrap">
+    <a class="brand" href="/uk-designs/">Atlas.</a>
+    <p class="eyebrow">UK / Three landing page concepts</p>
+    <h1>One idea.<br />Three expressions.</h1>
+    <p>Complete Astro landing pages. Other pages and contact actions are not connected in these previews.</p>
+    <div class="gallery-grid">
+      {ukDesigns.map((design, index) => <a class={`gallery-card gallery-${design.id}`} href={`/uk-designs/${design.id}/`}>
+        <img src={`/images/uk-designs/${design.id}-hero.webp`} alt="" width="1200" height="800" />
+        <div><span class="eyebrow">0{index + 1}</span><h2>{design.name}</h2><p>{design.note}</p><strong>Open design <span aria-hidden="true">↗</span></strong></div>
+      </a>)}
+    </div>
+  </main>
+</UKDesignLayout>

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atlas — Project intelligence for UK commercial HVAC contractors</title>
+  <meta name="description" content="Atlas researches upcoming UK commercial projects and sends HVAC contractors three qualified, personally reviewed opportunities a week — each with a clear next action.">
+  <meta name="theme-color" content="#050e1d">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a1a31'/%3E%3Cpath d='M7 23 16 8l9 15' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='19' r='2.6' fill='%23ff5d4d'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <div class="container header-row">
+    <a class="brand" href="#top" aria-label="Atlas — home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="#ff5d4d"/>
+        <path d="M7 23 16 8l9 15" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="16" cy="19" r="2.6" fill="#0a1a31"/>
+      </svg>
+      Atlas
+    </a>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#brief">The brief</a>
+      <a href="#pilot">Pilot</a>
+      <a href="#about">About</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary header-cta" href="sample.html">View sample</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" aria-hidden="true"><div class="hero-glow"></div></div>
+
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">UK commercial HVAC intelligence</p>
+        <h1 class="reveal" style="--d:80ms">Three UK projects worth chasing. <span class="hl">Every week.</span></h1>
+        <p class="lead reveal" style="--d:180ms">
+          Atlas researches upcoming commercial projects and sends HVAC contractors the few that fit —
+          with the scope, timing, who is involved and what to do next.
+        </p>
+        <div class="hero-actions reveal" style="--d:280ms">
+          <a class="btn btn-primary" href="sample.html">View a sample brief
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#pilot">Join the founding pilot</a>
+        </div>
+        <p class="hero-note reveal" style="--d:380ms"><span class="live-dot"></span>Personally researched. Commercially relevant.</p>
+      </div>
+
+      <div class="stage reveal" style="--d:200ms">
+        <div class="stage-head"><span>UK OPPORTUNITY MAP</span><span>ILLUSTRATIVE PROJECTS</span></div>
+        <div class="stage-map">
+          <svg class="ukmap" id="ukmap" viewBox="0 0 470 655" role="group" aria-label="Map of the United Kingdom with illustrative opportunity markers">
+            <defs>
+              <pattern id="dotGrid" width="9" height="9" patternUnits="userSpaceOnUse">
+                <circle cx="1.6" cy="1.6" r="1.1" fill="rgba(160,195,255,.38)"/>
+              </pattern>
+            </defs>
+            <path id="landFill" class="land-fill" d=""/>
+            <path id="landDots" class="land-dots" d=""/>
+            <g id="cities"></g>
+            <g id="pins"></g>
+          </svg>
+          <article class="stage-card" id="stageCard" aria-live="polite">
+            <div class="card-top"><span>Atlas · Opportunity brief</span><b>Illustrative</b></div>
+            <div class="card-body" id="cardBody">
+              <h3 class="card-title" id="cardTitle">Hotel refurbishment</h3>
+              <p class="card-city" id="cardCity">Manchester</p>
+              <dl class="card-rows">
+                <div><dt>Value</dt><dd id="cardValue">£18m illustrative project</dd></div>
+                <div><dt>Potential scope</dt><dd id="cardScope">Potential mechanical package</dd></div>
+                <div><dt>Next action</dt><dd>Verify procurement status</dd></div>
+              </dl>
+              <div class="card-foot"><span class="tick">✓ Qualified</span><span>Not a live lead</span></div>
+            </div>
+            <div class="card-timer" id="cardTimer"><i></i></div>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="trust">
+      <div class="container trust-row">
+        <div class="trust-item reveal">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></span>
+          <div>Personally reviewed<small>Every opportunity, by a person.</small></div>
+        </div>
+        <div class="trust-item reveal" style="--d:90ms">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8"/></svg></span>
+          <div>Honest about unknowns<small>Facts and open questions, separated.</small></div>
+        </div>
+        <div class="trust-item reveal" style="--d:180ms">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <div>A clear next action<small>Who to approach and what to confirm.</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTRAST ============ -->
+  <section class="section" id="difference">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">The difference</p>
+        <h2 class="reveal" style="--d:80ms">A feed shows everything.<br>A brief shows what matters.</h2>
+        <p class="lead reveal" style="--d:160ms">Most project feeds hand you every announcement and leave the qualifying to you. Atlas does the qualifying, so your time goes to the few conversations worth having.</p>
+      </div>
+
+      <div class="contrast-grid" id="contrast">
+        <div class="panel feed">
+          <div class="panel-label"><span>A typical project feed</span><span>Illustrative</span></div>
+          <div class="feed-row" style="--i:0"><i></i>Planning application — change of use, retail unit<em>Retail</em></div>
+          <div class="feed-row" style="--i:1"><i></i>Notice — façade repair works<em>Repair</em></div>
+          <div class="feed-row pick" style="--i:2"><i></i>Hotel restoration — existing building, heating plant replacement<em>Hospitality</em></div>
+          <div class="feed-row" style="--i:3"><i></i>Planning application — rear extension, two storey<em>Residential</em></div>
+          <div class="feed-row" style="--i:4"><i></i>Tender notice — grounds maintenance framework<em>Grounds</em></div>
+          <div class="feed-row pick" style="--i:5"><i></i>Care home expansion — ventilation and heating review<em>Healthcare</em></div>
+          <div class="feed-row" style="--i:6"><i></i>Planning application — 14 dwellings, new build<em>Residential</em></div>
+          <div class="feed-row" style="--i:7"><i></i>Prior approval — telecoms mast<em>Telecoms</em></div>
+          <div class="feed-row pick" style="--i:8"><i></i>Office refurbishment — building services assessment<em>Commercial</em></div>
+          <div class="feed-row" style="--i:9"><i></i>Notice — car park resurfacing<em>Civil</em></div>
+        </div>
+
+        <div class="flow" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24h30M28 14l10 10-10 10"/></svg>
+        </div>
+
+        <div class="panel briefs">
+          <div class="panel-label"><span>Your Atlas briefs</span><span>This week</span></div>
+          <a class="mini" href="sample.html" style="--k:0"><b>Hotel restoration</b><span>Potential heating and mechanical works</span><div class="next">Verify procurement status with the main contractor</div></a>
+          <a class="mini" href="sample.html" style="--k:1"><b>Care home expansion</b><span>Heating and ventilation review</span><div class="next">Confirm design team and package status</div></a>
+          <a class="mini" href="sample.html" style="--k:2"><b>Office refurbishment</b><span>Building services assessment</span><div class="next">Identify who controls the shortlist</div></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section how" id="how">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">How it works</p>
+        <h2 class="reveal" style="--d:80ms">From public signal to commercial opportunity.</h2>
+      </div>
+      <ol class="steps" id="steps">
+        <li class="step reveal">
+          <div class="step-n">01</div>
+          <h3>Public project signal</h3>
+          <p>A planning application, project announcement or reported development.</p>
+          <span class="step-tag">Monitor</span>
+        </li>
+        <li class="step reveal" style="--d:100ms">
+          <div class="step-n">02</div>
+          <h3>Research &amp; qualification</h3>
+          <p>We investigate the project, its timing and the organisations involved.</p>
+          <span class="step-tag">Research</span>
+        </li>
+        <li class="step reveal" style="--d:200ms">
+          <div class="step-n">03</div>
+          <h3>HVAC relevance</h3>
+          <p>We assess the potential fit for your services, capacity and coverage.</p>
+          <span class="step-tag">Qualify</span>
+        </li>
+        <li class="step reveal" style="--d:300ms">
+          <div class="step-n">04</div>
+          <h3>Delivered with direction</h3>
+          <p>You receive a concise opportunity brief and a clear next action.</p>
+          <span class="step-tag">Deliver</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ BRIEF EXPLORER ============ -->
+  <section class="section" id="brief">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">Inside a brief</p>
+        <h2 class="reveal" style="--d:80ms">One page. Everything you need to decide.</h2>
+        <p class="lead reveal" style="--d:160ms">This is an illustrative hotel restoration — the same structure every time, so you can scan it in a minute and know where to spend your effort.</p>
+      </div>
+
+      <div class="explorer" id="explorer">
+        <div class="explorer-nav reveal" role="tablist" aria-label="Sections of an opportunity brief">
+          <button class="ex-btn active" data-k="0" role="tab" aria-selected="true"><span class="n">01</span><b>What the project is</b><span class="d">The overview, and where it stands — including what the headline figure does and does not mean.</span></button>
+          <button class="ex-btn" data-k="1" role="tab" aria-selected="false"><span class="n">02</span><b>Where the HVAC scope sits</b><span class="d">Potential scope broken into prompts to investigate, not unconfirmed claims.</span></button>
+          <button class="ex-btn" data-k="2" role="tab" aria-selected="false"><span class="n">03</span><b>Who is involved</b><span class="d">Organisations and procurement route, with what is known and what is still to be verified.</span></button>
+          <button class="ex-btn" data-k="3" role="tab" aria-selected="false"><span class="n">04</span><b>What is still unknown</b><span class="d">The open questions, made explicit, so you don't commit estimating time blind.</span></button>
+          <button class="ex-btn" data-k="4" role="tab" aria-selected="false"><span class="n">05</span><b>What to do next</b><span class="d">One practical recommended action: who to approach, and what to ask.</span></button>
+        </div>
+
+        <article class="doc reveal" style="--d:120ms" aria-label="Illustrative opportunity brief">
+          <div class="doc-bar"><span>Atlas / Opportunity brief</span><b>Illustrative sample</b></div>
+          <header class="doc-head">
+            <h3>£30m Hotel Restoration</h3>
+            <p>South Croydon, Greater London</p>
+            <div class="doc-chips"><span>Sector: Hospitality</span><span>Potential scope: Heating &amp; mechanical</span></div>
+          </header>
+          <div class="doc-block active" data-k="0">
+            <h4>01 / Project overview</h4>
+            <p>Restoration of an existing hotel, including guest accommodation and shared facilities, with replacement of an ageing heating system. The £30m is the assumed overall project budget — not the value of an HVAC package.</p>
+          </div>
+          <div class="doc-block" data-k="1">
+            <h4>02 / Potential HVAC scope</h4>
+            <ul>
+              <li><b>Heating plant:</b> proposed heat source, plant replacement, distribution.</li>
+              <li><b>Hot water:</b> demand, storage, any change to guest-room provision.</li>
+              <li><b>Ventilation:</b> whether kitchens, bathrooms and shared areas need upgrades.</li>
+              <li><b>Controls &amp; commissioning:</b> integration and responsibility for handover.</li>
+            </ul>
+          </div>
+          <div class="doc-block" data-k="2">
+            <h4>03 / Organisations &amp; procurement</h4>
+            <dl class="doc-kv">
+              <div><dt>Client / developer</dt><dd>Not named</dd></div>
+              <div><dt>Main contractor</dt><dd>To be verified</dd></div>
+              <div><dt>Mechanical designer</dt><dd>To be established</dd></div>
+              <div><dt>Procurement route</dt><dd>Unknown</dd></div>
+              <div><dt>Package status</dt><dd>No evidence of an open package</dd></div>
+            </dl>
+          </div>
+          <div class="doc-block" data-k="3">
+            <h4>04 / What still needs confirming</h4>
+            <p>The project programme, the actual mechanical scope, whether the package is already placed, and who controls the shortlist.</p>
+          </div>
+          <div class="doc-block" data-k="4">
+            <h4>05 / Recommended next action</h4>
+            <p><b>Start with procurement verification.</b> Identify the appointed main contractor, then ask its procurement team whether mechanical services are still being procured and how to register interest.</p>
+          </div>
+          <div class="doc-foot">Demonstration only. Not a verified live opportunity.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT YOU RECEIVE ============ -->
+  <section class="section receive">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">What you receive</p>
+        <h2 class="reveal" style="--d:80ms">Less searching.<br>More worth pursuing.</h2>
+      </div>
+      <div class="cards3">
+        <article class="dcard reveal">
+          <div class="big">01</div>
+          <h3>Qualified projects</h3>
+          <p>Commercial projects selected for their potential HVAC relevance and fit with your business.</p>
+        </article>
+        <article class="dcard reveal" style="--d:100ms">
+          <div class="big">02</div>
+          <h3>Project intelligence</h3>
+          <p>Timing, potential scope, organisations involved and procurement signals, brought together in one clear brief.</p>
+        </article>
+        <article class="dcard key reveal" style="--d:200ms">
+          <span class="badge">The part that saves time</span>
+          <div class="big">03</div>
+          <h3>Your next action</h3>
+          <p>A practical recommendation for what to investigate, who to approach and what still needs confirming.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PILOT ============ -->
+  <section class="section pilot" id="pilot">
+    <div class="container pilot-grid">
+      <div>
+        <p class="eyebrow reveal">A focused start</p>
+        <h2 class="reveal" style="--d:80ms">Founding Contractor Pilot.</h2>
+        <p class="lead reveal" style="--d:140ms">We're onboarding a small number of UK commercial HVAC contractors. Put the intelligence to work for four weeks, then decide whether it earns a place in your business.</p>
+        <div class="price reveal" style="--d:200ms"><b>£199</b><span>Total · 4-week pilot</span></div>
+        <ul class="pilot-list reveal" style="--d:240ms">
+          <li>Three researched opportunities each week</li>
+          <li>Every opportunity personally reviewed</li>
+          <li>One deeper project investigation during the pilot</li>
+          <li>No long-term commitment</li>
+          <li>Continue only if useful</li>
+        </ul>
+        <a class="btn btn-primary reveal" style="--d:280ms" href="#contact">Discuss the pilot
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <div class="timeline reveal" style="--d:160ms" id="timeline">
+        <div class="tl-label"><span>Your four weeks</span><span>12 briefs</span></div>
+        <div class="week"><span class="week-n">Week 1</span><div class="week-bar"><i style="--w:0;--b:0">brief</i><i style="--w:0;--b:1">brief</i><i style="--w:0;--b:2">brief</i></div></div>
+        <div class="week"><span class="week-n">Week 2</span><div class="week-bar"><i style="--w:1;--b:0">brief</i><i style="--w:1;--b:1">brief</i><i style="--w:1;--b:2">brief</i></div></div>
+        <div class="week"><span class="week-n">Week 3</span><div class="week-bar"><i style="--w:2;--b:0">brief</i><i style="--w:2;--b:1">brief</i><i style="--w:2;--b:2">brief</i></div></div>
+        <div class="week"><span class="week-n">Week 4</span><div class="week-bar"><i style="--w:3;--b:0">brief</i><i style="--w:3;--b:1">brief</i><i style="--w:3;--b:2">brief</i></div></div>
+        <div class="tl-end">✓ Then you decide: continue only if it has been useful.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="section" id="about">
+    <div class="container about-grid">
+      <div>
+        <p class="eyebrow reveal">The person behind the research</p>
+        <p class="about-quote reveal" style="--d:80ms">Good research. <em>A direct relationship.</em></p>
+      </div>
+      <div class="about-body reveal" style="--d:140ms">
+        <p>Atlas is built by a software engineer with professional experience in business intelligence and information-monitoring workflows, now focused on helping UK commercial HVAC contractors identify projects worth pursuing.</p>
+        <p>That means a direct relationship with the person doing the research, and room to shape the service around what your business actually needs.</p>
+        <div class="principles">
+          <div class="principle">Commercial HVAC relevance</div>
+          <div class="principle">Personally reviewed research</div>
+          <div class="principle">Clear facts and open questions</div>
+          <div class="principle">A practical next action</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq" style="padding-top:0">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">Questions</p>
+        <h2 class="reveal" style="--d:80ms">What contractors usually ask.</h2>
+      </div>
+      <div class="faq reveal">
+        <details>
+          <summary>Where do the projects come from?</summary>
+          <p>They start as public project signals — a planning application, a project announcement or a reported development. Each one is then researched and qualified before it reaches you.</p>
+        </details>
+        <details>
+          <summary>Is a brief a verified live lead?</summary>
+          <p>No brief claims more than the evidence supports. A researched brief separates source-backed findings, commercial interpretation and open questions, with source links and dates for the underlying claims.</p>
+        </details>
+        <details>
+          <summary>What do I do with a brief?</summary>
+          <p>Every brief ends with a practical next action — who to approach and what to confirm — so you can decide quickly whether it deserves estimating time.</p>
+        </details>
+        <details>
+          <summary>What happens after the four weeks?</summary>
+          <p>You decide. Continue only if the intelligence has been useful. There is no long-term commitment.</p>
+        </details>
+        <details>
+          <summary>Who is behind Atlas?</summary>
+          <p>Atlas is founder-led. You work directly with the person reviewing the research and can explain what makes an opportunity useful to you.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA / CONTACT ============ -->
+  <section class="final" id="contact">
+    <div class="container">
+      <p class="eyebrow reveal" style="justify-content:center">Next step</p>
+      <h2 class="reveal" style="--d:80ms">What could your next<br>opportunity look like?</h2>
+      <p class="lead reveal" style="--d:140ms">Read a sample brief, then decide whether a four-week pilot is worth your time.</p>
+      <div class="hero-actions reveal" style="--d:200ms">
+        <a class="btn btn-primary" href="sample.html">View sample
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost" id="mailBtn" href="#contact">Discuss the pilot</a>
+      </div>
+      <div class="contact-box reveal" style="--d:260ms" id="contactBox" hidden></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-row">
+    <span>© <span id="year">2026</span> Atlas — Project intelligence for UK HVAC contractors</span>
+    <nav aria-label="Footer"><a href="sample.html">Sample brief</a><a href="#pilot">Pilot</a><a href="#about">About</a></nav>
+  </div>
+</footer>
+
+<script src="js/uk-map.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+---
+import FinalCTA from "./FinalCTA.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content, finalCta } = Astro.props;
+---
+{content ? <><div class="page-hero"><div class="container"><a class="breadcrumb" href={marketPath(market)}>← Back to Atlas</a><div class="eyebrow">{content.eyebrow}</div><h1>{content.title.map((line, index) => <>{index > 0 && <br />}{line}</>)}</h1><p class="lead">{content.lead}</p></div></div>
+<div class="section"><div class="container article-grid">
+  <article class="article">
+    {content.sections.map((section) => <section><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}</section>)}
+  </article>
+  <aside class="sidebar"><div class="eyebrow">{content.aside.eyebrow}</div><h2>{content.aside.title}</h2><ul class="checks">{content.aside.points.map((point) => <li>{point}</li>)}</ul><a class="text-link" href={marketPath(market, "/sample-opportunity/")}>{content.aside.link} <span aria-hidden="true">↗</span></a></aside>
+</div></div></> : <><div class="page-hero"><div class="container"><a class="breadcrumb" href={marketPath(market)}>← Back to Atlas</a><div class="eyebrow">About Atlas</div><h1>Good research.<br />A direct relationship.</h1><p class="lead">Focused project intelligence for {market.adjective} commercial HVAC contractors who want to spend their time on the right opportunities.</p></div></div>
+<div class="section"><div class="container article-grid">
+  <article class="article">
+    <section><h2>Founder-led project intelligence</h2><p>Atlas is built by a software engineer with professional experience in business intelligence and information-monitoring workflows, now focused on helping {market.adjective} commercial HVAC contractors identify projects worth pursuing.</p><p>The service applies that research discipline to a practical question: which upcoming commercial projects deserve a closer look from your business?</p></section>
+    <section><h2>Context makes the difference</h2><p>A project announcement is a starting point. Its usefulness depends on the scope, timing, organisations involved and whether there is a realistic route to a commercial conversation.</p><p>Atlas brings those pieces together and makes the unknowns explicit. Each brief should help you choose a next step, rather than leave you with another list to investigate.</p></section>
+    <section><h2>Built with founding contractors</h2><p>The four-week founding pilot is an opportunity to test the service against your coverage, capabilities and priorities. You work directly with the person reviewing the research and can explain what makes an opportunity useful to you.</p><p>At the end, continue only if the intelligence has been useful. There is no long-term commitment.</p></section>
+  </article>
+  <aside class="sidebar"><div class="eyebrow">Our approach</div><h2>Focused by design.</h2><ul class="checks"><li>Commercial HVAC relevance</li><li>Personally reviewed research</li><li>Clear facts and open questions</li><li>A practical next action</li></ul><a class="text-link" href={marketPath(market, "/sample-opportunity/")}>Read the sample <span aria-hidden="true">↗</span></a></aside>
+</div></div></>}
+<FinalCTA market={market} content={finalCta} />

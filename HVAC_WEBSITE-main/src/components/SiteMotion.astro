@@ -1,0 +1,299 @@
+---
+// Motion for every market. Small browser script, no framework.
+// - Scroll reveals ([data-reveal]) and the process rail
+// - Header state after the first scroll
+// - Coordinate readout on the map
+// - Live contour lines on the founder plate (canvas, marching squares on a slowly changing noise field)
+// Reveals run without reduced motion only. Content never depends on this script.
+---
+
+<script>
+  const root = document.documentElement;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  root.classList.add("motion-ready");
+
+  // ----- Scroll reveals -----
+  document.querySelectorAll<HTMLElement>("[data-reveal-group]").forEach((group) => {
+    Array.from(group.children).forEach((child, index) => (child as HTMLElement).style.setProperty("--d", `${index * 110}ms`));
+  });
+  const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+  if (reduce || !("IntersectionObserver" in window)) {
+    targets.forEach((element) => element.classList.add("is-in"));
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.16, rootMargin: "0px 0px -5% 0px" },
+    );
+    targets.forEach((element) => observer.observe(element));
+  }
+
+  // ----- Process rail follows the scroll -----
+  // The coral rail grows as the visitor scrolls. It is not a timed animation.
+  // --rail goes from 0 to 1 on .steps. A step square turns coral (.is-on) when the rail reaches it.
+  const rail = document.querySelector<HTMLElement>(".steps");
+  if (rail) {
+    const stepEls = Array.from(rail.querySelectorAll<HTMLElement>(".step"));
+    if (reduce) {
+      rail.style.setProperty("--rail", "1");
+      stepEls.forEach((step) => step.classList.add("is-on"));
+    } else {
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const box = rail.getBoundingClientRect();
+        const vertical = matchMedia("(max-width: 800px)").matches; // the rail is vertical on small screens
+        const line = innerHeight * (vertical ? 0.6 : 0.78); // the rail tip follows this line on the screen
+        const span = vertical ? box.height : innerHeight * 0.34;
+        const value = Math.min(1, Math.max(0, (line - box.top) / span));
+        rail.style.setProperty("--rail", value.toFixed(3));
+        stepEls.forEach((step) => {
+          const at = step.getBoundingClientRect();
+          const place = vertical ? (at.top - box.top) / box.height : (at.left - box.left) / box.width;
+          step.classList.toggle("is-on", value > 0 && value >= place - 0.001);
+        });
+      };
+      const request = () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      };
+      addEventListener("scroll", request, { passive: true });
+      addEventListener("resize", request);
+      update();
+    }
+  }
+
+  // ----- Header -----
+  const header = document.querySelector<HTMLElement>(".site-header");
+  if (header) {
+    const update = () => header.classList.toggle("is-scrolled", scrollY > 12);
+    addEventListener("scroll", update, { passive: true });
+    update();
+  }
+
+  // ----- Shared by the founder plate and the hero: smooth noise and contour lines -----
+  // Smooth 3D value noise. Two inputs move over the area. The third input is time.
+  const hash = (x: number, y: number, z: number) => {
+    let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(z, 1440662683);
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+  };
+  const fade = (t: number) => t * t * (3 - 2 * t);
+  const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+  const noise = (x: number, y: number, z: number) => {
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    const xf = fade(x - xi), yf = fade(y - yi), zf = fade(z - zi);
+    const plane = (k: number) =>
+      mix(mix(hash(xi, yi, zi + k), hash(xi + 1, yi, zi + k), xf), mix(hash(xi, yi + 1, zi + k), hash(xi + 1, yi + 1, zi + k), xf), yf);
+    return mix(plane(0), plane(1), zf);
+  };
+
+  // Marching squares. The field has (cols + 1) x (rows + 1) samples, one row after the other.
+  // The result is one path for one level. A cell is cell x cell pixels.
+  const contourPath = (field: Float32Array, cols: number, rows: number, level: number, cell: number) => {
+    const path = new Path2D();
+    const stride = cols + 1;
+    const at = (i: number, j: number) => field[j * stride + i];
+    const line = (x1: number, y1: number, x2: number, y2: number) => { path.moveTo(x1 * cell, y1 * cell); path.lineTo(x2 * cell, y2 * cell); };
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
+        const index = (a > level ? 1 : 0) | (b > level ? 2 : 0) | (c > level ? 4 : 0) | (d > level ? 8 : 0);
+        if (index === 0 || index === 15) continue;
+        const top = [i + (level - a) / (b - a), j], right = [i + 1, j + (level - b) / (c - b)];
+        const bottom = [i + (level - d) / (c - d), j + 1], left = [i, j + (level - a) / (d - a)];
+        const join = (p: number[], q: number[]) => line(p[0], p[1], q[0], q[1]);
+        switch (index) {
+          case 1: case 14: join(left, top); break;
+          case 2: case 13: join(top, right); break;
+          case 3: case 12: join(left, right); break;
+          case 4: case 11: join(right, bottom); break;
+          case 6: case 9: join(top, bottom); break;
+          case 7: case 8: join(left, bottom); break;
+          default: {
+            const centre = (a + b + c + d) / 4 > level;
+            if (index === 5) { if (centre) { join(top, right); join(left, bottom); } else { join(left, top); join(right, bottom); } }
+            else if (centre) { join(left, top); join(right, bottom); } else { join(top, right); join(left, bottom); }
+          }
+        }
+      }
+    }
+    return path;
+  };
+
+  // ----- Live contour lines in the hero -----
+  // The same method as the founder plate, but slower and quieter: the lines drift, they do not move fast.
+  // They are drawn only while the hero is on screen. With reduced motion, one still picture is drawn.
+  const heroBg = document.querySelector<HTMLElement>(".hero-bg");
+  const heroCanvas = heroBg?.querySelector<HTMLCanvasElement>("canvas.hero-contours");
+  const heroCtx = heroCanvas?.getContext("2d");
+  if (heroBg && heroCanvas && heroCtx) {
+    // Pixels between samples. A small number gives smooth, round lines. The founder plate uses 5. A wide screen uses a bigger step to keep the work small.
+    const cellFor = (w: number) => Math.min(14, Math.max(7, Math.round(w / 190)));
+    let CELL = 8;
+    const SCALE = 460; // pixels for one noise unit: bigger means larger shapes
+    const SPEED = 0.3; // 1 is the speed of the founder plate. Lower is slower.
+    const LEVELS = Array.from({ length: 14 }, (_, i) => 0.28 + i * 0.05);
+    let cols = 0, rows = 0, width = 0, height = 0, ratio = 1;
+    let field = new Float32Array(0);
+
+    const resize = () => {
+      ratio = Math.min(devicePixelRatio || 1, 2);
+      width = heroCanvas.clientWidth;
+      height = heroCanvas.clientHeight;
+      CELL = cellFor(width);
+      cols = Math.ceil(width / CELL);
+      rows = Math.ceil(height / CELL);
+      field = new Float32Array((cols + 1) * (rows + 1));
+      heroCanvas.width = Math.round(width * ratio);
+      heroCanvas.height = Math.round(height * ratio);
+    };
+
+    const paint = (seconds: number) => {
+      if (!width || !height) return;
+      const t = seconds * SPEED;
+      for (let j = 0; j <= rows; j++) {
+        for (let i = 0; i <= cols; i++) {
+          const x = (i * CELL) / SCALE, y = (j * CELL) / SCALE;
+          field[j * (cols + 1) + i] =
+            noise(x * 1.1 + 3.1, y * 1.1 + 7.4, t * 0.1) * 0.55 +
+            noise(x * 2.2 + 11, y * 2.2 + 2, t * 0.14 + 5) * 0.3 +
+            noise(x * 4.4 + 4, y * 4.4 + 9, t * 0.2 + 9) * 0.15;
+        }
+      }
+      heroCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      heroCtx.clearRect(0, 0, width, height);
+      heroCtx.lineCap = "round";
+      heroCtx.lineJoin = "round";
+      LEVELS.forEach((level, index) => {
+        const major = index % 5 === 0;
+        heroCtx.lineWidth = major ? 1.1 : 0.8;
+        heroCtx.strokeStyle = major ? "rgba(23, 33, 43, 0.5)" : "rgba(23, 33, 43, 0.24)";
+        heroCtx.stroke(contourPath(field, cols, rows, level, CELL));
+      });
+      heroBg.classList.add("is-live");
+    };
+
+    resize();
+    paint(20); // first picture at once, before the animation starts
+    new ResizeObserver(() => { resize(); paint(performance.now() / 1000 + 20); }).observe(heroCanvas);
+    if (reduce) {
+      paint(20); // one still picture
+    } else {
+      let running = false;
+      let last = 0;
+      const start = performance.now();
+      const frame = (now: number) => {
+        if (!running) return;
+        if (now - last > 50) { last = now; paint((now - start) / 1000 + 20); } // about 20 frames per second
+        requestAnimationFrame(frame);
+      };
+      const toggle = (visible: boolean) => {
+        if (visible && !running && !document.hidden) { running = true; requestAnimationFrame(frame); }
+        else if (!visible) running = false;
+      };
+      let heroOnScreen = false;
+      new IntersectionObserver((entries) => { heroOnScreen = entries[0].isIntersecting; toggle(heroOnScreen); }).observe(heroBg);
+      document.addEventListener("visibilitychange", () => toggle(heroOnScreen && !document.hidden));
+    }
+  }
+
+  // ----- Live contour lines on the founder plate -----
+  const plate = document.querySelector<HTMLElement>(".founder-plate");
+  const canvas = plate?.querySelector<HTMLCanvasElement>("canvas.topo-live");
+  const ctx = canvas?.getContext("2d");
+  if (plate && canvas && ctx) {
+    const GRID = 60;
+    const field = new Float32Array((GRID + 1) * (GRID + 1));
+    const LEVELS = Array.from({ length: 16 }, (_, i) => 0.3 + i * 0.045);
+    let size = 0;
+    let ratio = 1;
+
+    const resize = () => {
+      ratio = Math.min(devicePixelRatio || 1, 2);
+      size = canvas.clientWidth;
+      canvas.width = canvas.height = Math.round(size * ratio);
+    };
+
+    const sample = (t: number) => {
+      for (let j = 0; j <= GRID; j++) {
+        for (let i = 0; i <= GRID; i++) {
+          const u = (i / GRID) * 2 - 1, v = (j / GRID) * 2 - 1;
+          const terrain = noise(u * 1.5 + 3.1, v * 1.5 + 7.4, t * 0.1) * 0.55 + noise(u * 3 + 11, v * 3 + 2, t * 0.14 + 5) * 0.3 + noise(u * 6 + 4, v * 6 + 9, t * 0.2 + 9) * 0.15;
+          const summit = Math.exp(-(u * u + v * v) / 0.3) * (0.4 + 0.14 * Math.sin(t * 0.55));
+          field[j * (GRID + 1) + i] = terrain * 0.78 + summit;
+        }
+      }
+    };
+
+    const draw = (t: number) => {
+      if (!size) return;
+      sample(t);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      const cell = size / GRID;
+      LEVELS.forEach((level, index) => {
+        const path = contourPath(field, GRID, GRID, level, cell);
+        const major = index % 5 === 0;
+        ctx.lineWidth = major ? 1.2 : 0.9;
+        ctx.strokeStyle = major ? "rgba(23, 33, 43, 0.5)" : "rgba(23, 33, 43, 0.22)";
+        ctx.stroke(path);
+      });
+      plate.classList.add("is-live");
+    };
+
+    resize();
+    new ResizeObserver(() => { resize(); draw(performance.now() / 1000); }).observe(canvas);
+    if (reduce) {
+      draw(6); // one still picture
+    } else {
+      let running = false;
+      let last = 0;
+      let start = performance.now();
+      const frame = (now: number) => {
+        if (!running) return;
+        if (now - last > 33) { last = now; draw((now - start) / 1000 + 6); } // about 30 frames per second
+        requestAnimationFrame(frame);
+      };
+      const toggle = (visible: boolean) => {
+        if (visible && !running && !document.hidden) { running = true; requestAnimationFrame(frame); }
+        else if (!visible) running = false;
+      };
+      let onScreen = false;
+      new IntersectionObserver((entries) => { onScreen = entries[0].isIntersecting; toggle(onScreen); }).observe(plate);
+      document.addEventListener("visibilitychange", () => toggle(onScreen && !document.hidden));
+    }
+  }
+
+  // ----- Map coordinate readout -----
+  const readout = document.querySelector<HTMLElement>(".map-readout");
+  const stage = document.querySelector<HTMLElement>(".map-stage");
+  const svg = stage?.querySelector<SVGSVGElement>(".opportunity-map");
+  if (readout && stage && svg) {
+    const { ax, bx, ay, by, default: fallback = "" } = readout.dataset;
+    const [kx, cx, ky, cy] = [ax, bx, ay, by].map(Number);
+    stage.addEventListener("pointermove", (event) => {
+      if (event.pointerType === "touch") return;
+      const matrix = svg.getScreenCTM();
+      if (!matrix) return;
+      const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+      const lon = (point.x - cx) / kx;
+      const lat = (point.y - cy) / ky;
+      readout.textContent = `${Math.abs(lat).toFixed(3)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(3)}° ${lon < 0 ? "W" : "E"}`;
+      readout.classList.add("is-live");
+    });
+    stage.addEventListener("pointerleave", () => {
+      readout.textContent = fallback;
+      readout.classList.remove("is-live");
+    });
+  }
+</script>

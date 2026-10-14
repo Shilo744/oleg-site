@@ -1,0 +1,1009 @@
+/* Atlas line drawings and small visual blocks, for every market.
+   Same palette as cz-design.css: white, charcoal, grey, coral. Square corners, thin lines.
+   Every rule is scoped to body[data-market]. It loads after atlas-design.css.
+   Drawings are decoration (aria-hidden). The visible text says the same.
+   Start states (hidden, undrawn) apply only with class "js" and without "reveal-off",
+   as in cz-design.css. */
+
+body[data-market] {
+  /* ---------- Drawing panel ---------- */
+  & .illus {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    margin-bottom: clamp(20px, 2vw, 28px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  & .illus svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  & .illus-wide {
+    aspect-ratio: 580 / 370;
+    margin: 0;
+  }
+  & .illus text {
+    fill: var(--muted);
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  & .ln {
+    fill: none;
+    stroke: var(--navy);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  & .ln-g {
+    fill: none;
+    stroke: #aab2b9;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  & .fl-w { fill: #fff; }
+  & .fl-g { fill: #e9ebea; }
+  & .fl-n { fill: var(--navy); }
+  & .fl-b { fill: #aab2b9; }
+  & .fl-c { fill: var(--coral); }
+  & .fl-w.ln { fill: #fff; }
+
+  /* Stroke draw, fade and bar grow. The end state is the base style. */
+  & .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.5s var(--ease-in-out) var(--dl, 0s);
+  }
+  & .fade {
+    transition: opacity 0.9s ease var(--dl, 0s);
+  }
+  & .bar {
+    transform-box: fill-box;
+    transform-origin: left center;
+    transition: transform 0.9s var(--ease) var(--dl, 0s);
+  }
+
+  /* ---------- Radar: signals matched against your business ---------- */
+  & .v-radar .sweep {
+    transform-origin: 160px 92px;
+    animation: rot 8s linear infinite;
+  }
+  & .sweep-fill {
+    fill: rgba(244, 92, 82, 0.15);
+  }
+  & .sweep-edge {
+    fill: none;
+    stroke: var(--coral);
+    stroke-width: 1.2;
+  }
+  & .blip {
+    fill: #aab2b9;
+  }
+  & .hit-sq {
+    fill: var(--coral);
+  }
+  & .hit-ring {
+    fill: none;
+    stroke: var(--coral);
+    stroke-width: 1;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 3s ease-out infinite;
+    animation-delay: calc(var(--i) * 0.8s);
+  }
+
+  /* ---------- Brief: facts, interpretation, open questions ---------- */
+  & .v-brief .sheet-back {
+    stroke: var(--line);
+  }
+  & .tick {
+    fill: none;
+    stroke: var(--coral);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  & .q-box {
+    fill: #fff;
+    stroke: var(--navy);
+    stroke-width: 1;
+  }
+  & .illus text.q {
+    fill: var(--navy);
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+  & .dash {
+    fill: none;
+    stroke: #7b858d;
+    stroke-width: 1.4;
+    stroke-dasharray: 4 3;
+    stroke-linecap: round;
+  }
+
+  /* ---------- Path: from a signal to a next action ---------- */
+  & .illus text.nt {
+    fill: var(--navy);
+    font-size: 8.5px;
+    letter-spacing: 0.03em;
+    text-transform: none;
+  }
+  & .illus text.nt-g {
+    fill: #7b858d;
+  }
+  & .node-drop {
+    stroke-dasharray: 3 3;
+  }
+  & .v-path .dash {
+    stroke: #aab2b9;
+  }
+  & .travel {
+    fill: var(--coral);
+    offset-path: path("M102 41H112V100H216V159H222");
+    animation: travel 5.5s linear infinite;
+  }
+
+  /* ---------- Process step icons ---------- */
+  & .step-icon {
+    display: block;
+    flex: none;
+    width: clamp(34px, 2.6vw, 42px);
+    height: auto;
+  }
+  & .step-icon path,
+  & .step-icon rect,
+  & .step-icon circle {
+    fill: none;
+    stroke: var(--navy);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  & .step-icon .sq {
+    fill: #fff;
+  }
+  & .step-icon .sq-c {
+    fill: var(--coral);
+    stroke: var(--coral);
+  }
+  & .step-icon .draw {
+    transition-delay: calc(0.5s + var(--i) * 0.55s);
+  }
+
+  /* ---------- Hotel section drawing ---------- */
+  & .diagram {
+    container-type: inline-size;
+    margin: 0;
+    padding-top: clamp(56px, 6.5vw, 108px);
+  }
+  & .article .diagram {
+    margin-bottom: clamp(36px, 3.4vw, 56px);
+    padding-top: clamp(28px, 3vw, 44px);
+  }
+  & .d-head {
+    max-width: 46em;
+    margin-bottom: clamp(28px, 3.4vw, 52px);
+  }
+  & .d-head h2 {
+    margin-bottom: 18px;
+  }
+  & .d-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(1rem, 0.2vw + 0.96rem, 1.12rem);
+    line-height: 1.7;
+  }
+  & .d-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 72px);
+    align-items: center;
+  }
+  & .d-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .d-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid #c9cfd3;
+    transition: border-color 0.3s;
+  }
+  & .d-item:last-child {
+    border-bottom: 1px solid #c9cfd3;
+  }
+  & .d-num {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    background: var(--coral);
+    color: var(--navy);
+    font-size: 0.8rem;
+    font-weight: 800;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  & .d-item h3 {
+    font-size: clamp(1.05rem, 0.3vw + 1rem, 1.25rem);
+  }
+  & .d-item p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: clamp(0.92rem, 0.1vw + 0.9rem, 1rem);
+    line-height: 1.6;
+  }
+  & .d-cap {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+  & .v-hotel .win {
+    fill: #eceeed;
+    stroke: #c9cfd3;
+    stroke-width: 0.9;
+  }
+  & .v-hotel .shaft {
+    fill: #e2e5e4;
+    stroke: #c9cfd3;
+    stroke-width: 1;
+  }
+  & .v-hotel .duct {
+    fill: none;
+    stroke: #d0d5d9;
+    stroke-width: 5;
+  }
+  & .v-hotel .pipe {
+    fill: none;
+    stroke: var(--coral);
+    stroke-width: 2;
+    stroke-dasharray: 5 5;
+    stroke-linejoin: round;
+    animation: dash-move 1.1s linear infinite;
+  }
+  & .v-hotel .ctl {
+    fill: none;
+    stroke: #6b747c;
+    stroke-width: 1;
+    stroke-dasharray: 1.5 3.5;
+    stroke-linecap: round;
+  }
+  & .v-hotel .sensor {
+    fill: #fff;
+    stroke: var(--navy);
+    stroke-width: 1;
+    animation: blink 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.45s);
+  }
+  & .v-hotel .fan {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: rot 2.6s linear infinite;
+  }
+  & .v-hotel .fan path {
+    fill: none;
+    stroke: var(--navy);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+  }
+  & .v-hotel .flame {
+    fill: var(--coral);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: flicker 1.7s ease-in-out infinite;
+  }
+  & .v-hotel .dot-c { fill: var(--coral); }
+  & .v-hotel .dot-b { fill: #aab2b9; }
+  & .v-hotel .key { fill: #d0d5d9; }
+  & .v-hotel .hl {
+    stroke: none;
+    transition: fill 0.3s, stroke 0.3s;
+  }
+  & .v-hotel .mk {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) calc(1.8s + var(--i) * 0.15s);
+  }
+  & .v-hotel .mk rect {
+    fill: var(--coral);
+  }
+  & .illus .mk text {
+    fill: var(--navy);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+  /* Hover on a list item marks the part in the drawing, and the other way round. */
+  & .d-item:hover {
+    border-top-color: var(--navy);
+  }
+  & .d-item:hover .d-num {
+    background: var(--navy);
+    color: #fff;
+  }
+  & .diagram:has(.feat:hover) .d-item {
+    transition: none;
+  }
+  & .diagram:has(.feat-1:hover) .d-item[data-k="1"],
+  & .diagram:has(.feat-2:hover) .d-item[data-k="2"],
+  & .diagram:has(.feat-3:hover) .d-item[data-k="3"],
+  & .diagram:has(.feat-4:hover) .d-item[data-k="4"] {
+    border-top-color: var(--navy);
+  }
+  & .diagram:has(.feat-1:hover) .d-item[data-k="1"] .d-num,
+  & .diagram:has(.feat-2:hover) .d-item[data-k="2"] .d-num,
+  & .diagram:has(.feat-3:hover) .d-item[data-k="3"] .d-num,
+  & .diagram:has(.feat-4:hover) .d-item[data-k="4"] .d-num {
+    background: var(--navy);
+    color: #fff;
+  }
+  & .diagram:has(.d-item[data-k="1"]:hover) .feat-1 .hl,
+  & .diagram:has(.d-item[data-k="2"]:hover) .feat-2 .hl,
+  & .diagram:has(.d-item[data-k="3"]:hover) .feat-3 .hl,
+  & .diagram:has(.d-item[data-k="4"]:hover) .feat-4 .hl,
+  & .v-hotel .feat:hover .hl {
+    fill: #fdeceb;
+    stroke: var(--coral);
+    stroke-width: 3;
+  }
+  & .diagram:has(.d-item[data-k="1"]:hover) .mk-1,
+  & .diagram:has(.d-item[data-k="2"]:hover) .mk-2,
+  & .diagram:has(.d-item[data-k="3"]:hover) .mk-3,
+  & .diagram:has(.d-item[data-k="4"]:hover) .mk-4 {
+    transform: scale(1.35);
+    transition: transform 0.3s var(--ease);
+  }
+
+  /* ---------- Pilot: four weeks, three signals each ---------- */
+  & .pilot-weeks {
+    max-width: 440px;
+    margin-top: clamp(28px, 3vw, 44px);
+  }
+  & .weeks {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  & .wk b {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  & .sqs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+  & .sqs i {
+    aspect-ratio: 1;
+    border: 1.5px solid #9aa3aa;
+    background: #fff;
+    transition: background-color 0.4s, border-color 0.4s;
+    transition-delay: calc(0.6s + (var(--w) * 3 + var(--k)) * 0.12s);
+  }
+  & .pilot-copy.is-in .sqs i {
+    border-color: var(--navy);
+    background: var(--navy);
+  }
+  & .deep {
+    margin-top: 14px;
+  }
+  & .deep::before {
+    content: "";
+    display: block;
+    height: 9px;
+    border: 2px solid var(--coral);
+    border-top: 0;
+  }
+  & .deep span {
+    display: block;
+    margin-top: 10px;
+    color: var(--navy);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Founder plate: a round brand mark with live contour lines ---------- */
+  /* Without the script, the plate shows still contour lines (::before).
+     With the script, a canvas draws contour lines that slowly change shape. */
+  & .founder-plate {
+    position: relative;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+    overflow: hidden;
+    width: min(100%, 300px);
+    margin-top: clamp(28px, 3vw, 44px);
+    aspect-ratio: 1;
+    border: 1px solid #c9cfd3;
+    border-radius: 50%;
+    background: #fff;
+  }
+  & .founder-plate::before {
+    content: "";
+    position: absolute;
+    inset: -6%;
+    z-index: -2;
+    background: var(--navy);
+    opacity: 0.14;
+    -webkit-mask: url("/topo.svg") center / cover no-repeat;
+    mask: url("/topo.svg") center / cover no-repeat;
+    transition: opacity 0.8s;
+  }
+  & .founder-plate.is-live::before {
+    opacity: 0;
+  }
+  & .founder-plate canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
+  & .founder-plate svg {
+    width: clamp(60px, 5.6vw, 84px);
+    height: auto;
+  }
+
+  /* ---------- Contact: profile tiles ---------- */
+  & .profile-tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    max-width: 540px;
+    margin: clamp(24px, 2.6vw, 36px) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .profile-tiles li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-weight: 700;
+    transition:
+      opacity 0.9s var(--ease) var(--d, 0ms),
+      transform 1.1s var(--ease) var(--d, 0ms),
+      border-color 0.3s;
+  }
+  & .profile-tiles li:hover {
+    border-color: var(--navy);
+  }
+  & .profile-tiles svg {
+    flex: none;
+    fill: none;
+    stroke: var(--navy);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  & .profile-tiles .sq-c {
+    fill: var(--coral);
+    stroke: none;
+  }
+  & .profile-tiles .fan-i {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  & .profile-tiles li:hover .fan-i {
+    animation: rot 1.6s linear infinite;
+  }
+
+  /* About: the drawing sits on top of the aside. */
+  & .sidebar > .illus {
+    margin: -4px 0 24px;
+  }
+}
+
+/* ---------- Start states (script on, reveal not off) ---------- */
+html.js:not(.reveal-off) body[data-market] [data-reveal]:not(.is-in) .draw {
+  stroke-dashoffset: 1;
+}
+html.js:not(.reveal-off) body[data-market] [data-reveal]:not(.is-in) .fade {
+  opacity: 0;
+}
+html.js:not(.reveal-off) body[data-market] [data-reveal]:not(.is-in) .bar {
+  transform: scaleX(0);
+}
+html.js:not(.reveal-off) body[data-market] [data-reveal]:not(.is-in) .v-hotel .mk {
+  transform: scale(0);
+}
+/* ---------- Keyframes ---------- */
+@keyframes rot {
+  to { transform: rotate(360deg); }
+}
+@keyframes dash-move {
+  to { stroke-dashoffset: -10; }
+}
+@keyframes travel {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+@keyframes flicker {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  35% { transform: scaleY(1.18) scaleX(0.92); }
+  70% { transform: scaleY(0.92) scaleX(1.06); }
+}
+@keyframes blink {
+  0%, 100% { fill: #fff; }
+  50% { fill: var(--coral); }
+}
+
+/* ---------- Responsive ---------- */
+/* The drawing sits beside its list only when its own container is wide enough. */
+@container (max-width: 1000px) {
+  body[data-market] .d-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  body[data-market] .profile-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-market] .weeks {
+    gap: 8px;
+  }
+  body[data-market] .wk b {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+/* ---------- Map: selected city, city models, touch sheet ---------- */
+body[data-market] {
+  /* The chosen city: the others fade, its signal line grows, cross lines meet on it. */
+  & .map-marker,
+  & .map-city-label,
+  & .map-dot {
+    transition: opacity 0.3s;
+  }
+  & .map-stage[data-selected] .map-marker:not(.is-selected),
+  & .map-stage[data-selected] .map-city-label.is-dim,
+  & .map-stage[data-selected] .map-dot {
+    opacity: 0.38;
+  }
+  & .map-link {
+    transition: stroke-opacity 0.3s, stroke-width 0.3s;
+  }
+  & .map-stage[data-selected] .map-link:not(.is-to-selected) {
+    stroke-opacity: 0.16;
+  }
+  & .map-link.is-to-selected {
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+  & .map-cross line {
+    stroke: var(--coral);
+    stroke-opacity: 0.55;
+    stroke-width: 1;
+    stroke-dasharray: 3 5;
+    opacity: 0;
+    transition: opacity 0.35s;
+    pointer-events: none;
+  }
+  & .map-stage[data-selected] .map-cross line {
+    opacity: 1;
+  }
+  & .map-ripple {
+    fill: none;
+    stroke: var(--coral);
+    stroke-width: 1.5;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    pointer-events: none;
+  }
+  & .map-marker.is-selected .map-ripple {
+    animation: ripple 2s ease-out infinite;
+  }
+  & .map-marker.is-selected .map-ripple.r2 {
+    animation-delay: 1s;
+  }
+  & .map-rich .map-marker circle:not(.map-hit):not(.map-ring):not(.map-ripple) {
+    transition: transform 0.3s var(--ease);
+  }
+  & .map-rich .map-marker.is-selected circle:not(.map-hit):not(.map-ring):not(.map-ripple) {
+    transform: scale(1.3);
+  }
+
+  /* ---------- City models: small dioramas in layers ---------- */
+  & .lens-city,
+  & .pv-art {
+    background: linear-gradient(180deg, #f8f9f9 0%, #e9edef 62%, #dde2e5 100%);
+  }
+  & .map-rich .lens-city {
+    background: linear-gradient(180deg, #f8f9f9 0%, #e9edef 62%, #dde2e5 100%);
+  }
+  & .map-rich .lens-city svg.scene,
+  & .pv-art svg.scene {
+    position: absolute;
+    inset: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  & .scene .sc-far { fill: #d8dee2; }
+  & .scene .sc-mid { fill: #b4bcc3; }
+  & .scene .sc-near { fill: var(--navy); }
+  & .scene .sc-ground > rect { fill: #e4e8ea; }
+  & .scene .sc-evenodd { fill-rule: evenodd; }
+  & .scene .sc-wheel { fill: #dfe4e7; }
+  & .scene .sc-band { fill: #7c8790; }
+  & .scene .sc-arch { fill: #dfe4e7; }
+  & .scene .sc-pipe,
+  & .scene .sc-frame,
+  & .scene .sc-wire {
+    fill: none;
+    stroke: #7c8790;
+    stroke-width: 1.2;
+  }
+  & .scene .sc-frame { stroke: var(--navy); stroke-width: 1.5; }
+  & .scene .sc-wire { stroke: #8d979e; stroke-width: 0.8; }
+  & .scene .sc-road,
+  & .scene .sc-sleeper {
+    fill: none;
+    stroke: #cfd5d9;
+    stroke-width: 1;
+  }
+  & .scene .sc-sleeper { stroke: #d9dee1; stroke-width: 2; }
+  & .scene .sc-wave,
+  & .scene .sc-street {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    animation: sc-shimmer 3.6s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  & .scene .sc-sun { fill: var(--coral); opacity: 0.9; }
+  & .scene .sc-glow { fill: var(--coral); opacity: 0.12; }
+  & .scene .sc-furnace { fill: var(--coral); opacity: 0.24; filter: blur(3px); animation: sc-flicker 2.4s ease-in-out infinite; }
+  & .scene .sc-cloud {
+    fill: #fff;
+    opacity: 0.95;
+    animation: sc-drift var(--s, 36s) ease-in-out infinite alternate;
+  }
+  & .scene .sc-bird {
+    fill: none;
+    stroke: #5a646c;
+    stroke-width: 1;
+    stroke-linecap: round;
+    animation: sc-fly 8s ease-in-out infinite alternate;
+    animation-delay: var(--d, 0s);
+  }
+  & .scene .sc-smoke {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: sc-smoke 4.6s ease-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  & .scene .sc-win {
+    fill: #fff;
+    opacity: 0.9;
+    animation: sc-twinkle 5s ease-in-out infinite;
+    animation-delay: calc(var(--w, 0) * 1s);
+  }
+  & .scene .sc-name {
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    fill: var(--navy);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+  }
+  & .scene .sc-sub {
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 1.6px;
+    fill: var(--muted);
+    font-size: 4.6px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+  }
+  /* The lens moves the layers a little against each other as the pointer moves: far moves least, near moves most. */
+  & .scene .sc-far,
+  & .scene .sc-mid,
+  & .scene .sc-near,
+  & .scene .sc-fx {
+    transition: transform 0.25s ease-out;
+  }
+  & .scene .sc-far { transform: translate(calc(var(--ox, 0) * -1.2px), calc(var(--oy, 0) * -0.8px)); }
+  & .scene .sc-mid { transform: translate(calc(var(--ox, 0) * -2.6px), calc(var(--oy, 0) * -1.4px)); }
+  & .scene .sc-near { transform: translate(calc(var(--ox, 0) * -5px), calc(var(--oy, 0) * -2.4px)); }
+  & .scene .sc-fx { transform: translate(calc(var(--ox, 0) * -0.8px), calc(var(--oy, 0) * -0.5px)); }
+  & .map-lens.is-city .scene .sc-far { animation: sc-rise 0.7s var(--ease) backwards; }
+  & .map-lens.is-city .scene .sc-mid { animation: sc-rise 0.7s var(--ease) 0.06s backwards; }
+  & .map-lens.is-city .scene .sc-near { animation: sc-rise 0.8s var(--ease) 0.12s backwards; }
+  & .map-lens.is-city .scene .sc-ground { animation: sc-rise 0.7s var(--ease) 0.04s backwards; }
+  & .pv-art .sc-label { display: none; }
+
+  /* ---------- Touch sheet: the card with the city model, the facts and the checks ---------- */
+  & .map-preview .pv { display: none; }
+  & .map-preview .pv-art {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    aspect-ratio: 16 / 9;
+  }
+  & .map-preview .pv-main,
+  & .map-preview .pv-side {
+    min-width: 0;
+  }
+  & .map-rich .map-preview .pv .preview-label {
+    margin: 0 0 6px;
+    padding: 0;
+    color: var(--coral-ink);
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  & .map-rich .map-preview .pv h3 {
+    margin: 0;
+    font-size: clamp(1.2rem, 0.4vw + 1.1rem, 1.5rem);
+    letter-spacing: -0.03em;
+  }
+  & .map-rich .map-preview .pv .pv-where {
+    margin: 4px 0 10px;
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+  & .map-preview .pv-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    margin: 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--line);
+  }
+  & .map-preview .pv-facts .wide { grid-column: 1 / -1; }
+  & .map-preview .pv-facts dt {
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  & .map-preview .pv-facts dd {
+    margin: 3px 0 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  & .map-preview .pv-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+  }
+  & .map-preview .pv-chip {
+    padding: 4px 9px;
+    border: 1px solid var(--coral-ink);
+    color: var(--coral-ink);
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  & .map-preview .pv-link {
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(23, 33, 43, 0.35);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  & .map-preview .pv-link:hover {
+    border-bottom-color: var(--coral);
+    text-decoration: none;
+  }
+  & .map-preview .pv-sub {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  & .map-preview .pv-checks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .map-preview .pv-checks li {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  & .map-preview .pv-checks li::before {
+    content: "✓";
+    color: var(--coral-ink);
+    font-weight: 800;
+  }
+  & .map-rich .map-preview .pv .pv-note {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 0.74rem;
+    line-height: 1.5;
+  }
+  & .map-preview .pv-facts > div,
+  & .map-preview .pv-checks li,
+  & .map-preview .pv-foot {
+    transition: opacity 0.5s var(--ease) calc(0.25s + var(--k, 0) * 0.08s), transform 0.5s var(--ease) calc(0.25s + var(--k, 0) * 0.08s);
+  }
+  & .map-preview:not(.is-open) .pv-facts > div,
+  & .map-preview:not(.is-open) .pv-checks li,
+  & .map-preview:not(.is-open) .pv-foot {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 0.75; }
+  100% { transform: scale(4.2); opacity: 0; }
+}
+@keyframes sc-rise {
+  from { opacity: 0; translate: 0 12px; }
+}
+@keyframes sc-drift {
+  from { transform: translateX(-9px); }
+  to { transform: translateX(13px); }
+}
+@keyframes sc-fly {
+  from { transform: translate(0, 0); }
+  to { transform: translate(16px, -5px); }
+}
+@keyframes sc-shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.95; }
+}
+@keyframes sc-twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.95; }
+}
+@keyframes sc-flicker {
+  0%, 100% { opacity: 0.26; }
+  40% { opacity: 0.42; }
+  70% { opacity: 0.3; }
+}
+@keyframes sc-smoke {
+  0% { opacity: 0; transform: translate(0, 4px); }
+  25% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(5px, -9px); }
+}
+/* Touch, or a narrow window: there is no lens. The card becomes a sheet that rises from the bottom of the screen. */
+@media (hover: none), (max-width: 760px) {
+  body[data-market] .map-rich .map-preview.pv-card {
+    position: fixed;
+    top: auto !important;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    z-index: 90;
+    max-height: min(80vh, 680px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 0 env(safe-area-inset-bottom);
+    pointer-events: auto;
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 0;
+    border-top: 3px solid var(--coral);
+    border-radius: 0;
+    box-shadow: 0 -30px 60px -30px rgba(23, 33, 43, 0.5);
+    animation: none;
+    transform: translateY(100%);
+    transition: transform 0.5s var(--ease);
+  }
+  body[data-market] .map-rich .map-preview.pv-card.is-open {
+    transform: none;
+  }
+  body[data-market] .map-preview .pc-compact {
+    display: none;
+  }
+  body[data-market] .map-preview .pv {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 0 18px 24px;
+  }
+  body[data-market] .map-preview .pv-art {
+    margin: 0 -18px;
+    border-width: 0 0 1px;
+    aspect-ratio: 16 / 10;
+  }
+  body[data-market] .map-preview .pv-side {
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+  }
+  body[data-market] .map-preview .preview-close {
+    top: 6px;
+    right: 6px;
+    z-index: 4;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1.6rem;
+  }
+  body[data-market] .map-panel.map-rich.is-sheet-open::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgba(23, 33, 43, 0.4);
+    animation: fade-in 0.3s ease;
+  }
+}
+/* While the sheet is open it must sit above the trust strip and the sections below the hero. */
+body[data-market] .hero:has(.map-panel.is-sheet-open) {
+  z-index: 55;
+}
+body[data-market] .hero:has(.map-panel.is-sheet-open) .hero-grid {
+  z-index: 5;
+}
+@media (pointer: coarse) {
+  body[data-market] .map-marker .map-hit {
+    r: 32px !important;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body[data-market] .map-preview.pv-card,
+  body[data-market] .map-preview .pv-facts > div,
+  body[data-market] .map-preview .pv-checks li,
+  body[data-market] .map-preview .pv-foot,
+  body[data-market] .draw,
+  body[data-market] .fade,
+  body[data-market] .bar,
+  body[data-market] .mk,
+  body[data-market] .sqs i,
+  body[data-market] .profile-tiles li {
+    transition: none !important;
+  }
+  body[data-market] .draw {
+    stroke-dashoffset: 0 !important;
+  }
+  body[data-market] .fade {
+    opacity: 1 !important;
+  }
+  body[data-market] .bar,
+  body[data-market] .v-hotel .mk {
+    transform: none !important;
+  }
+  body[data-market] .pilot-copy .sqs i {
+    border-color: var(--navy);
+    background: var(--navy);
+  }
+}

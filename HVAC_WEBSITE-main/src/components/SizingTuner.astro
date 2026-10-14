@@ -1,0 +1,371 @@
+<div class="tuner-launcher" data-tuner-launcher hidden>
+  <button type="button" data-open-tuner>Open size tuner ↗</button>
+  <span class="tuner-launcher__status" aria-live="polite"></span>
+</div>
+
+<aside class="size-tuner" data-size-tuner hidden aria-label="Czech page size tuner">
+  <header class="size-tuner__header">
+    <div>
+      <strong>Atlas page size tuner</strong>
+      <span>Changes update the preview window live.</span>
+    </div>
+  </header>
+  <div class="size-tuner__controls">
+    <label>
+      <span>Overall scale <output for="tune-overall">100%</output></span>
+      <input id="tune-overall" name="overall" type="range" min="85" max="115" step="1" value="100" />
+    </label>
+    <label>
+      <span>Content width <output for="tune-width">1120px</output></span>
+      <input id="tune-width" name="width" type="range" min="900" max="1320" step="20" value="1120" />
+    </label>
+    <label>
+      <span>Regular text <output for="tune-text">100%</output></span>
+      <input id="tune-text" name="text" type="range" min="30" max="115" step="1" value="100" />
+    </label>
+    <p class="size-tuner__warning" data-text-warning hidden>Text below 75% can be difficult to read. Use it for testing only.</p>
+    <label>
+      <span>Spacing <output for="tune-spacing">100%</output></span>
+      <input id="tune-spacing" name="spacing" type="range" min="70" max="130" step="2" value="100" />
+    </label>
+    <label>
+      <span>Map size <output for="tune-map">100%</output></span>
+      <input id="tune-map" name="map" type="range" min="75" max="130" step="1" value="100" />
+    </label>
+    <label>
+      <span>Logo size <output for="tune-logo">100%</output></span>
+      <input id="tune-logo" name="logo" type="range" min="50" max="160" step="1" value="100" />
+    </label>
+    <label>
+      <span>Hero title <output for="tune-hero-title">100%</output></span>
+      <input id="tune-hero-title" name="heroTitle" type="range" min="30" max="150" step="1" value="100" />
+    </label>
+    <label>
+      <span>Header height <output for="tune-header-height">100%</output></span>
+      <input id="tune-header-height" name="headerHeight" type="range" min="60" max="150" step="1" value="100" />
+    </label>
+    <label>
+      <span>Country switcher <output for="tune-country-switcher">100%</output></span>
+      <input id="tune-country-switcher" name="countrySwitcher" type="range" min="30" max="160" step="1" value="100" />
+    </label>
+    <label>
+      <span>Map preview card <output for="tune-map-preview">100%</output></span>
+      <input id="tune-map-preview" name="mapPreview" type="range" min="40" max="160" step="1" value="100" />
+    </label>
+    <div class="size-tuner__actions">
+      <button type="button" data-tuner-reset>Reset</button>
+      <button type="button" data-tuner-copy>Copy values</button>
+    </div>
+    <button type="button" class="size-tuner__close" data-tuner-close>Close tuner window</button>
+    <p class="size-tuner__status" aria-live="polite"></p>
+  </div>
+</aside>
+
+<script>
+  const body = document.body;
+  if (body.dataset.market === "cz") {
+    const storageKey = "atlas-cz-size-tuner-v4";
+    const channelName = "atlas-cz-size-tuner";
+    const defaults = {
+      overall: 100,
+      width: 1120,
+      text: 75,
+      spacing: 100,
+      map: 75,
+      logo: 90,
+      heroTitle: 30,
+      headerHeight: 87,
+      countrySwitcher: 77,
+      mapPreview: 40,
+    };
+    const limits = {
+      overall: [85, 115],
+      width: [900, 1320],
+      text: [30, 115],
+      spacing: [70, 130],
+      map: [75, 130],
+      logo: [50, 160],
+      heroTitle: [30, 150],
+      headerHeight: [60, 150],
+      countrySwitcher: [30, 160],
+      mapPreview: [40, 160],
+    };
+    type TunerValues = typeof defaults;
+    const tuner = document.querySelector<HTMLElement>("[data-size-tuner]");
+    const launcher = document.querySelector<HTMLElement>("[data-tuner-launcher]");
+    const inputs = tuner ? Array.from(tuner.querySelectorAll<HTMLInputElement>('input[type="range"]')) : [];
+    const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+    const round = (value: number, places = 2) => Number(value.toFixed(places));
+    const sanitise = (candidate: Record<string, unknown> = {}) => Object.fromEntries(
+      Object.entries(defaults).map(([key, fallback]) => {
+        const numeric = Number(candidate[key]);
+        const [min, max] = limits[key as keyof typeof limits];
+        return [key, clamp(Number.isFinite(numeric) ? numeric : fallback, min, max)];
+      }),
+    ) as TunerValues;
+    const readStored = () => {
+      try {
+        const stored = localStorage.getItem(storageKey);
+        return stored ? sanitise(JSON.parse(stored).values) : { ...defaults };
+      } catch {
+        return { ...defaults };
+      }
+    };
+    let values = readStored();
+    const channel = "BroadcastChannel" in window ? new BroadcastChannel(channelName) : null;
+
+    const updateControls = () => {
+      inputs.forEach((input) => {
+        const key = input.name as keyof TunerValues;
+        input.value = String(values[key]);
+        const output = tuner?.querySelector<HTMLOutputElement>(`output[for="${input.id}"]`);
+        if (output) output.value = key === "width" ? `${values[key]}px` : `${values[key]}%`;
+      });
+      const warning = tuner?.querySelector<HTMLElement>("[data-text-warning]");
+      if (warning) warning.hidden = values.text >= 75;
+    };
+    const apply = () => {
+      const overall = values.overall / 100;
+      const typeScale = overall * (values.text / 100);
+      const spaceScale = overall * (values.spacing / 100);
+      const mapScale = overall * (values.map / 100);
+      const logoScale = overall * (values.logo / 100);
+      const heroScale = overall * (values.heroTitle / 100);
+      const headerScale = overall * (values.headerHeight / 100);
+      const switcherScale = overall * (values.countrySwitcher / 100);
+      const previewScale = overall * (values.mapPreview / 100);
+      const set = (name: string, value: string) => body.style.setProperty(name, value);
+
+      set("--cz-body-font", `${round(clamp(16 * typeScale, 4.8, 18.5))}px`);
+      set("--cz-font-075", `${round(clamp(12 * typeScale, 3.6, 14))}px`);
+      set("--cz-font-08125", `${round(clamp(13 * typeScale, 3.9, 15))}px`);
+      set("--cz-font-0875", `${round(clamp(14 * typeScale, 4.2, 16.25))}px`);
+      set("--cz-font-09375", `${round(clamp(15 * typeScale, 4.5, 17.5))}px`);
+      set("--cz-font-10625", `${round(clamp(17 * typeScale, 5.1, 19.5))}px`);
+      set("--cz-container-max", `${round(clamp(values.width * overall, 840, 1360))}px`);
+      set("--cz-header-height", `${round(clamp(70 * headerScale, 44, 120))}px`);
+      set("--cz-logo-font", `${round(clamp(1.55 * logoScale, 0.78, 2.5))}rem`);
+      set("--cz-logo-icon", `${round(clamp(26 * logoScale, 14, 44))}px`);
+      set("--cz-nav-font", `${round(clamp(0.75 * typeScale, 0.225, 0.9), 3)}rem`);
+      set("--cz-nav-gap", `${round(clamp(14 * spaceScale, 8, 24))}px`);
+      set("--cz-switcher-font", `${round(clamp(0.675 * switcherScale, 0.203, 1.08), 3)}rem`);
+      set("--cz-h1-font", `${round(clamp(2.6 * heroScale, 0.78, 4))}rem`);
+      set("--cz-h2-font", `${round(clamp(2.15 * typeScale, 0.645, 2.7))}rem`);
+      set("--cz-h3-font", `${round(clamp(1.15 * typeScale, 0.345, 1.45))}rem`);
+      set("--cz-eyebrow-font", `${round(clamp(0.6875 * typeScale, 0.206, 0.825), 3)}rem`);
+      set("--cz-button-font", `${round(clamp(0.8125 * typeScale, 0.3, 0.95), 3)}rem`);
+      set("--cz-button-height", `${round(clamp(46 * spaceScale, 44, 60))}px`);
+      set("--cz-control-pad-y", `${round(clamp(12 * spaceScale, 9, 17))}px`);
+      set("--cz-control-pad-x", `${round(clamp(16 * spaceScale, 12, 24))}px`);
+      set("--cz-hero-gap", `${round(clamp(28 * spaceScale, 18, 44))}px`);
+      set("--cz-hero-pad-top", `${round(clamp(34 * spaceScale, 22, 54))}px`);
+      set("--cz-hero-pad-bottom", `${round(clamp(28 * spaceScale, 20, 46))}px`);
+      set("--cz-map-ratio", String(round(clamp(1.25 / mapScale, 0.92, 1.65), 3)));
+      set("--cz-map-mobile-height", `${round(clamp(400 * mapScale, 320, 520))}px`);
+      set("--cz-map-preview-width", `${round(clamp(235 * previewScale, 150, 376))}px`);
+      set("--cz-map-preview-padding", `${round(clamp(18 * previewScale, 10, 29))}px`);
+      set("--cz-map-preview-label-font", `${round(clamp(0.75 * previewScale, 0.4, 1.2), 3)}rem`);
+      set("--cz-map-preview-title-font", `${round(clamp(0.9375 * previewScale, 0.5, 1.5), 3)}rem`);
+      set("--cz-map-preview-text-font", `${round(clamp(0.8125 * previewScale, 0.4, 1.3), 3)}rem`);
+      set("--cz-section-space", `${round(clamp(56 * spaceScale, 40, 80))}px`);
+      set("--cz-trust-pad", `${round(clamp(16 * spaceScale, 11, 25))}px`);
+      set("--cz-section-gap", `${round(clamp(44 * spaceScale, 26, 66))}px`);
+      set("--cz-section-margin", `${round(clamp(32 * spaceScale, 20, 48))}px`);
+      set("--cz-grid-gap", `${round(clamp(28 * spaceScale, 16, 46))}px`);
+      set("--cz-card-padding", `${round(clamp(24 * spaceScale, 17, 36))}px`);
+      set("--cz-major-gap", `${round(clamp(54 * spaceScale, 32, 86))}px`);
+      set("--cz-cta-padding", `${round(clamp(48 * spaceScale, 34, 70))}px`);
+      set("--cz-footer-pad", `${round(clamp(34 * spaceScale, 24, 50))}px`);
+      updateControls();
+    };
+    const saveAndSync = () => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({ version: 4, values }));
+      } catch {}
+      channel?.postMessage({ type: "values", values });
+    };
+    const status = (message: string) => {
+      const node = tuner?.querySelector<HTMLElement>(".size-tuner__status");
+      if (node) node.textContent = message;
+    };
+    const receive = (candidate: Record<string, unknown>) => {
+      values = sanitise(candidate);
+      apply();
+    };
+
+    apply();
+    channel?.addEventListener("message", (event) => {
+      if (event.data?.type === "values") receive(event.data.values || {});
+    });
+    window.addEventListener("storage", (event) => {
+      if (event.key === storageKey) receive(readStored());
+    });
+
+    const params = new URLSearchParams(location.search);
+    const popupMode = params.get("tuner-window") === "1";
+    if (popupMode && tuner) {
+      body.classList.add("tuner-window-mode");
+      tuner.hidden = false;
+      inputs.forEach((input) => input.addEventListener("input", () => {
+        values = sanitise({ ...values, [input.name]: Number(input.value) });
+        apply();
+        saveAndSync();
+        status("");
+      }));
+      tuner.querySelector<HTMLButtonElement>("[data-tuner-reset]")?.addEventListener("click", () => {
+        values = { ...defaults };
+        try { localStorage.removeItem(storageKey); } catch {}
+        apply();
+        channel?.postMessage({ type: "values", values });
+        status("Default sizes restored.");
+      });
+      tuner.querySelector<HTMLButtonElement>("[data-tuner-copy]")?.addEventListener("click", async () => {
+        const css = `/* Atlas Czech size tuner */\n--atlas-tune-overall: ${values.overall}%;\n--atlas-tune-width: ${values.width}px;\n--atlas-tune-text: ${values.text}%;\n--atlas-tune-spacing: ${values.spacing}%;\n--atlas-tune-map: ${values.map}%;\n--atlas-tune-logo: ${values.logo}%;\n--atlas-tune-hero-title: ${values.heroTitle}%;\n--atlas-tune-header-height: ${values.headerHeight}%;\n--atlas-tune-country-switcher: ${values.countrySwitcher}%;\n--atlas-tune-map-preview: ${values.mapPreview}%;`;
+        try {
+          await navigator.clipboard.writeText(css);
+          status("Values copied.");
+        } catch {
+          status("Copy failed. Select the values again and retry.");
+        }
+      });
+      tuner.querySelector<HTMLButtonElement>("[data-tuner-close]")?.addEventListener("click", () => window.close());
+    } else if (params.get("tune") === "1" && launcher) {
+      launcher.hidden = false;
+      launcher.querySelector<HTMLButtonElement>("[data-open-tuner]")?.addEventListener("click", () => {
+        const popupUrl = new URL(location.href);
+        popupUrl.searchParams.delete("tune");
+        popupUrl.searchParams.set("tuner-window", "1");
+        const popup = window.open(popupUrl.href, "atlas-size-tuner", "popup=yes,width=380,height=860,resizable=yes,scrollbars=yes");
+        if (popup) popup.focus();
+        else {
+          const node = launcher.querySelector<HTMLElement>(".tuner-launcher__status");
+          if (node) node.textContent = "The browser blocked the tuner window.";
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  .tuner-launcher {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tuner-launcher[hidden],
+  .size-tuner[hidden] {
+    display: none;
+  }
+  .tuner-launcher button,
+  .size-tuner button {
+    min-height: 44px;
+    padding: 9px 14px;
+    color: #17212b;
+    background: #fff;
+    border: 1px solid #aeb6ba;
+    box-shadow: 0 8px 24px rgb(23 33 43 / 14%);
+    font: 700 14px/1.2 "Manrope Variable", sans-serif;
+  }
+  .tuner-launcher button:hover,
+  .size-tuner button:hover {
+    background: #eef0ee;
+  }
+  .tuner-launcher__status {
+    max-width: 220px;
+    padding: 6px 9px;
+    color: #17212b;
+    background: #fff;
+    font: 12px/1.3 "Manrope Variable", sans-serif;
+  }
+  .size-tuner {
+    width: 100%;
+    min-height: 100vh;
+    color: #17212b;
+    background: #fff;
+    font: 14px/1.35 "Manrope Variable", sans-serif;
+  }
+  .size-tuner__header {
+    padding: 18px;
+    border-bottom: 1px solid #dce0e2;
+  }
+  .size-tuner__header strong,
+  .size-tuner__header span {
+    display: block;
+  }
+  .size-tuner__header strong {
+    font-size: 17px;
+  }
+  .size-tuner__header span {
+    margin-top: 4px;
+    color: #59636e;
+    font-size: 12px;
+  }
+  .size-tuner__controls {
+    padding: 16px 18px 24px;
+  }
+  .size-tuner label {
+    display: block;
+    margin-bottom: 13px;
+  }
+  .size-tuner label > span {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 5px;
+  }
+  .size-tuner output {
+    color: #59636e;
+    font-variant-numeric: tabular-nums;
+  }
+  .size-tuner input[type="range"] {
+    width: 100%;
+    min-height: 26px;
+    accent-color: #f45c52;
+  }
+  .size-tuner__warning {
+    margin: -5px 0 13px;
+    padding: 9px 11px;
+    color: #702c27;
+    background: #fff0ee;
+    border-left: 3px solid #f45c52;
+    font-size: 12px;
+  }
+  .size-tuner__warning[hidden] {
+    display: none;
+  }
+  .size-tuner__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .size-tuner__actions button {
+    flex: 1;
+  }
+  .size-tuner__close {
+    width: 100%;
+    margin-top: 8px;
+  }
+  .size-tuner__status {
+    min-height: 19px;
+    margin: 8px 0 0;
+    color: #59636e;
+    font-size: 12px;
+  }
+  :global(body.tuner-window-mode) {
+    min-width: 300px;
+    margin: 0;
+    overflow: auto;
+    background: #fff;
+  }
+  :global(body.tuner-window-mode .skip-link),
+  :global(body.tuner-window-mode .site-header),
+  :global(body.tuner-window-mode > main),
+  :global(body.tuner-window-mode > .site-footer),
+  :global(body.tuner-window-mode .tuner-launcher) {
+    display: none !important;
+  }
+</style>

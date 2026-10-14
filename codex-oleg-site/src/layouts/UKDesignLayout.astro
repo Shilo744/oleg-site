@@ -1,0 +1,20 @@
+---
+import '@fontsource-variable/manrope';
+import '../styles/uk-designs.css';
+const { design, title = `Atlas / ${design.name}` } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content="Atlas UK landing page design preview. Commercial HVAC project research." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body data-uk-design={design.id}>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+  </body>
+</html>

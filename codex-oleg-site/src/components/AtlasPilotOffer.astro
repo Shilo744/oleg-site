@@ -1,0 +1,10 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, features, cta, showAction = true } = Astro.props;
+---
+<aside class="v3-offer" aria-label="Founding pilot offer">
+  <p class="v3-price">{market.pilotPrice.split(" total")[0]}</p>
+  <p class="v3-price-term">Total — 4-week pilot</p>
+  <ul>{features.map((feature) => <li><span aria-hidden="true">✓</span>{feature}</li>)}</ul>
+  {showAction && <a class="v3-button v3-button-coral" href={marketPath(market, "/contact/")}>{cta}</a>}
+</aside>

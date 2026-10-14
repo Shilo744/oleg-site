@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MarketSample from "../../components/MarketSample.astro";
+import { markets } from "../../data/markets.js";
+import { deContent } from "../../data/content.js";
+---
+<BaseLayout content={deContent} marketId="de" title="German sample opportunity — hotel redevelopment" description="Explore an illustrative Berlin hotel redevelopment brief: potential HVAC scope, procurement questions and recommended next actions.">
+  <MarketSample market={markets.de} content={deContent.sample} finalCta={deContent.home.finalCta} diagram={deContent.diagram} />
+</BaseLayout>

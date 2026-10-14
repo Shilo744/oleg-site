@@ -1,0 +1,506 @@
+/* Czech site theme. Every rule is scoped to body[data-market="cz"]. */
+
+body[data-market="cz"] {
+  --navy: #0a1a2b;
+  --slate: #13293f;
+  --coral: #2fd8b8;
+  --paper: #f1f6f7;
+  --muted: #475a6b;
+  --line: #d6e0e5;
+  --accent-deep: #0a7a68;
+  --accent-light: #7ff0da;
+  --amber: #ffb547;
+  --ink-soft: #b3c6d6;
+  --radius: 12px;
+  background: var(--paper);
+  color: var(--navy);
+}
+
+/* ---------- Focus ---------- */
+body[data-market="cz"] a:focus-visible,
+body[data-market="cz"] button:focus-visible,
+body[data-market="cz"] summary:focus-visible {
+  outline-color: var(--accent-deep);
+}
+body[data-market="cz"] .site-header a:focus-visible,
+body[data-market="cz"] .site-header button:focus-visible,
+body[data-market="cz"] .hero a:focus-visible,
+body[data-market="cz"] .hero button:focus-visible,
+body[data-market="cz"] .process a:focus-visible,
+body[data-market="cz"] .final-cta a:focus-visible,
+body[data-market="cz"] .map-panel :focus-visible {
+  outline-color: var(--accent-light);
+}
+
+/* ---------- Header ---------- */
+body[data-market="cz"] .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  color: #fff;
+  background: rgba(8, 20, 34, 0.72);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+body[data-market="cz"] .header-inner {
+  min-height: 72px;
+  gap: 24px;
+}
+body[data-market="cz"] .brand {
+  font-size: 1.6rem;
+}
+body[data-market="cz"] .brand svg {
+  width: 28px;
+  height: 28px;
+}
+body[data-market="cz"] .brand svg path:first-child {
+  fill: var(--coral);
+}
+body[data-market="cz"] .brand-dot {
+  color: var(--coral);
+}
+body[data-market="cz"] nav {
+  gap: 24px;
+  font-size: 0.875rem;
+}
+body[data-market="cz"] nav > a {
+  white-space: nowrap;
+  color: #dbe7f0;
+  transition: color 0.15s;
+}
+body[data-market="cz"] nav > a:hover {
+  color: var(--accent-light);
+  text-decoration: none;
+}
+body[data-market="cz"] .country-switcher {
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: #9fb4c6;
+}
+body[data-market="cz"] .country-switcher a[aria-current="page"] {
+  color: #fff;
+  text-decoration-color: var(--coral);
+}
+body[data-market="cz"] .nav-contact {
+  min-height: 42px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  color: #fff;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+body[data-market="cz"] nav > a.nav-contact:hover {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: #04141c;
+}
+body[data-market="cz"] .menu-toggle {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+}
+@media (min-width: 801px) and (max-width: 1050px) {
+  body[data-market="cz"] nav {
+    gap: 14px;
+    font-size: 0.8125rem;
+  }
+  body[data-market="cz"] .nav-contact {
+    padding: 0 12px;
+  }
+}
+@media (max-width: 800px) {
+  body[data-market="cz"] .header-inner {
+    min-height: 64px;
+  }
+  body[data-market="cz"] nav a {
+    padding: 14px 5px;
+  }
+  body[data-market="cz"] .nav-contact {
+    border: 0;
+    min-height: 0;
+    padding: 14px 5px;
+  }
+  body[data-market="cz"] section[id] {
+    scroll-margin-top: 76px;
+  }
+}
+body[data-market="cz"] section[id] {
+  scroll-margin-top: 90px;
+}
+
+/* ---------- Buttons ---------- */
+body[data-market="cz"] .button {
+  border-radius: 10px;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+body[data-market="cz"] .button-primary {
+  background: var(--coral);
+  color: #04141c;
+}
+body[data-market="cz"] .button-primary:hover {
+  background: #62e8cf;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(47, 216, 184, 0.35);
+}
+body[data-market="cz"] .button-secondary:hover {
+  background: rgba(10, 26, 43, 0.06);
+}
+body[data-market="cz"] .button-dark:hover {
+  background: var(--slate);
+}
+
+/* ---------- Hero ---------- */
+body[data-market="cz"] .hero {
+  position: relative;
+  color: #fff;
+  border-bottom: 0;
+  background:
+    radial-gradient(760px 480px at 76% 46%, rgba(47, 216, 184, 0.17), transparent 65%),
+    radial-gradient(520px 380px at 6% 0%, rgba(90, 130, 255, 0.16), transparent 65%),
+    linear-gradient(180deg, #07121f 0%, #0b2034 100%);
+}
+body[data-market="cz"] .hero-grid {
+  padding-top: 56px;
+  padding-bottom: 70px;
+  column-gap: 40px;
+}
+body[data-market="cz"] .hero-copy h1 {
+  max-width: 560px;
+  font-size: clamp(2.3rem, 3.7vw, 3.35rem);
+  line-height: 1.08;
+}
+body[data-market="cz"] .hero-copy h1 em {
+  color: var(--accent-light);
+  background: linear-gradient(90deg, #7ff0da, #ffd27a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body[data-market="cz"] .hero-copy p {
+  max-width: 500px;
+  color: var(--ink-soft);
+}
+body[data-market="cz"] .hero .eyebrow {
+  color: var(--accent-light);
+}
+body[data-market="cz"] .eyebrow:before {
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--coral);
+}
+body[data-market="cz"] .hero .button-secondary {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.07);
+}
+body[data-market="cz"] .hero .button-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+body[data-market="cz"] .hero .microcopy {
+  color: #9fb4c6;
+}
+
+/* Trust strip floats over the hero edge. */
+body[data-market="cz"] .trust-strip {
+  position: relative;
+  z-index: 2;
+  margin-top: -28px;
+  margin-bottom: 8px;
+  padding: 16px 28px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(10, 26, 43, 0.12);
+  justify-content: space-between;
+}
+body[data-market="cz"] .trust-strip b {
+  color: var(--accent-deep);
+}
+
+/* ---------- Map ---------- */
+body[data-market="cz"] .map-panel[data-market="cz"] {
+  border: 0;
+  border-radius: 0;
+  background: radial-gradient(closest-side, rgba(47, 216, 184, 0.1), transparent 78%);
+  color: #fff;
+}
+body[data-market="cz"] .map-heading {
+  color: #9be8d8;
+}
+body[data-market="cz"] .map-heading span:last-child,
+body[data-market="cz"] .map-key {
+  color: #9fb4c6;
+}
+body[data-market="cz"] .map-land {
+  fill: rgba(47, 216, 184, 0.17);
+  stroke: rgba(127, 240, 218, 0.4);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 16px rgba(47, 216, 184, 0.4)) drop-shadow(0 22px 22px rgba(0, 0, 0, 0.35));
+  transition: fill 0.3s;
+}
+body[data-market="cz"] .map-stage {
+  cursor: default;
+}
+body[data-market="cz"] .map-stage:hover .map-land {
+  fill: rgba(47, 216, 184, 0.26);
+}
+body[data-market="cz"] .map-label {
+  fill: rgba(255, 255, 255, 0.4);
+}
+body[data-market="cz"] .map-marker circle {
+  fill: var(--amber);
+  stroke: #07121f;
+  stroke-width: 2;
+}
+body[data-market="cz"] .map-marker:hover circle,
+body[data-market="cz"] .map-marker:focus-visible circle,
+body[data-market="cz"] .map-marker[aria-pressed="true"] circle {
+  fill: #fff;
+  stroke: var(--amber);
+  stroke-width: 3;
+}
+body[data-market="cz"] .map-marker .map-hit {
+  fill: transparent;
+  stroke: none;
+}
+body[data-market="cz"] .map-dot {
+  fill: rgba(255, 255, 255, 0.8);
+  stroke: #07121f;
+  stroke-width: 1.4;
+}
+body[data-market="cz"] .map-ring {
+  stroke: var(--amber) !important;
+}
+body[data-market="cz"] .map-key i {
+  background: var(--amber);
+}
+body[data-market="cz"] .map-preview {
+  color: #fff;
+  background: rgba(9, 24, 40, 0.8);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-left: 3px solid var(--amber);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  z-index: 4;
+}
+body[data-market="cz"] .map-preview .preview-label {
+  color: #9be8d8;
+}
+body[data-market="cz"] .map-preview p {
+  color: #d6e3ee;
+}
+body[data-market="cz"] .preview-close {
+  color: #fff;
+}
+
+/* Magnifying lens */
+.map-lens {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.15s;
+  --r: 90px;
+}
+.map-lens.is-visible {
+  opacity: 1;
+}
+.lens-glass {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #08192a;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 0 0 6px rgba(47, 216, 184, 0.12),
+    0 18px 40px rgba(0, 0, 0, 0.5),
+    0 0 36px rgba(47, 216, 184, 0.35);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.map-lens.is-city .lens-glass {
+  border-color: var(--amber);
+  box-shadow:
+    0 0 0 6px rgba(255, 181, 71, 0.16),
+    0 18px 40px rgba(0, 0, 0, 0.5),
+    0 0 36px rgba(255, 181, 71, 0.4);
+}
+.map-lens::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 58px;
+  left: calc(var(--r) + var(--r) * 0.7071 - 7px);
+  top: calc(var(--r) + var(--r) * 0.7071 - 4px);
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e8f2f7, #7d93a5);
+  transform-origin: 7px 4px;
+  transform: rotate(-45deg);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+.lens-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.28), transparent 38%);
+}
+.lens-map {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.2s;
+}
+.lens-map .opportunity-map {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
+  transform-origin: 0 0;
+}
+.lens-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(7, 18, 31, 0.6);
+  transition: opacity 0.2s;
+}
+.lens-city {
+  --hue: 210;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 34px;
+  text-align: center;
+  color: #fff;
+  background:
+    radial-gradient(circle at 70% 28%, hsl(var(--hue) 90% 80% / 0.55), transparent 22%),
+    linear-gradient(180deg, hsl(var(--hue) 60% 30%), hsl(var(--hue) 55% 12%));
+  transition: opacity 0.2s;
+}
+.lens-city svg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  width: 100%;
+  height: 52%;
+  fill: hsl(var(--hue) 45% 6%);
+}
+.lens-city strong {
+  position: relative;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  max-width: 130px;
+  line-height: 1.15;
+}
+.lens-city span {
+  position: relative;
+  margin-top: 5px;
+  max-width: 120px;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  color: #e3edf5;
+}
+.map-lens.is-city .lens-city {
+  opacity: 1;
+}
+.map-lens.is-city .lens-map,
+.map-lens.is-city .lens-dot {
+  opacity: 0;
+}
+@media (hover: none) {
+  .map-lens {
+    display: none;
+  }
+}
+
+/* ---------- Content sections ---------- */
+body[data-market="cz"] .benefit {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+body[data-market="cz"] .benefit:hover {
+  transform: translateY(-3px);
+  border-color: var(--coral);
+  box-shadow: 0 16px 36px rgba(10, 26, 43, 0.1);
+}
+body[data-market="cz"] .section.white {
+  background: linear-gradient(180deg, #fff, #eef5f6);
+}
+body[data-market="cz"] .benefit .number {
+  color: var(--accent-deep);
+}
+body[data-market="cz"] .process {
+  background:
+    radial-gradient(600px 300px at 90% 0%, rgba(47, 216, 184, 0.14), transparent 70%),
+    linear-gradient(180deg, #0a1a2b, #0e2338);
+}
+body[data-market="cz"] .step .step-number {
+  color: var(--accent-light);
+}
+body[data-market="cz"] .final-cta {
+  background:
+    radial-gradient(500px 240px at 85% 50%, rgba(47, 216, 184, 0.16), transparent 70%),
+    linear-gradient(90deg, #0a1a2b, #10263c);
+}
+body[data-market="cz"] .report-card {
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(10, 26, 43, 0.14);
+}
+body[data-market="cz"] .checks li:before {
+  color: var(--accent-deep);
+}
+body[data-market="cz"] .notice {
+  background: #e3f0f0;
+  border-radius: 0 10px 10px 0;
+}
+body[data-market="cz"] .pilot-offer {
+  border-left-color: var(--coral);
+}
+body[data-market="cz"] .sidebar {
+  border-radius: 14px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  body[data-market="cz"] .hero-grid {
+    padding-bottom: 54px;
+  }
+  body[data-market="cz"] .trust-strip {
+    margin-top: -22px;
+    padding: 14px 18px;
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-market="cz"] .button,
+  body[data-market="cz"] .benefit,
+  .map-lens,
+  .lens-glass,
+  .lens-city,
+  .lens-map {
+    transition: none !important;
+  }
+}

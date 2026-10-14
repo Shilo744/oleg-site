@@ -1,0 +1,30 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+---
+<section class="section founder">
+  <div class="container founder-grid">
+    <div data-reveal>
+      <div class="eyebrow">{content?.eyebrow || "The person behind the research"}</div><h2>
+        {content ? content.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>Founder-led.<br />Personally invested.</>}
+      </h2>
+      {(
+        <div class="founder-plate" aria-hidden="true">
+          <canvas class="topo-live"></canvas>
+          <svg viewBox="0 0 36 36" width="84" height="84" focusable="false"><path d="M3 30 16 5h7l-5 10-8 15Z" fill="#F45C52"></path><path d="m22 17 11 13H16Z" fill="#17212b"></path></svg>
+        </div>
+      )}
+    </div><div data-reveal>
+      {content ? content.paragraphs.map((paragraph) => <p>{paragraph}</p>) : <><p>
+        Atlas is built by a software engineer with professional experience in
+        business intelligence and information-monitoring workflows, now focused
+        on helping {market.adjective} commercial HVAC contractors identify projects worth
+        pursuing.
+      </p><p>
+        That means a direct relationship with the person doing the research, and
+        room to shape the service around what your business actually needs.
+      </p></>}<a class="text-link" href={marketPath(market, "/about/")}
+        >{content?.link || "Meet the thinking behind Atlas"} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>

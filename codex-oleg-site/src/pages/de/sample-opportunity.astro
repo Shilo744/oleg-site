@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MarketSample from "../../components/MarketSample.astro";
+import { markets } from "../../data/markets.js";
+---
+<BaseLayout marketId="de" title="German sample opportunity — hotel redevelopment" description="Explore an illustrative Berlin hotel redevelopment brief: potential HVAC scope, procurement questions and recommended next actions.">
+  <MarketSample market={markets.de} />
+</BaseLayout>

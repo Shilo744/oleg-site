@@ -1,0 +1,125 @@
+---
+import OpportunityMap from "./OpportunityMap.astro";
+import AtlasPilotOffer from "./AtlasPilotOffer.astro";
+import AtlasCTA from "./AtlasCTA.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+const v3 = content.v3;
+const sample = marketPath(market, "/sample-opportunity/");
+const contact = marketPath(market, "/contact/");
+const pilot = `${marketPath(market)}#pilot`;
+---
+
+<section class="v3-hero" aria-labelledby="hero-title">
+  <div class="v3-wrap v3-hero-grid">
+    <div class="v3-hero-copy">
+      <p class="v3-kicker">{v3.hero.eyebrow}</p>
+      <h1 id="hero-title">{v3.hero.title}<br /><span>{v3.hero.emphasis}</span></h1>
+      <p class="v3-hero-intro">{v3.hero.body}</p>
+    </div>
+    <figure class="v3-hero-photo">
+      <img src={market.homeImages.architecture} alt={`Generated illustration of historic ${market.adjective} commercial architecture with renovation scaffolding`} width="1122" height="1402" fetchpriority="high" />
+      <figcaption>{v3.images.architecture}</figcaption>
+      <div class="v3-photo-note">
+        <span>{v3.hero.preview.label}</span>
+        <strong>{v3.hero.preview.title}</strong>
+        <p>{v3.hero.preview.scope}</p>
+        <p>{v3.hero.preview.next}</p>
+        <small>{v3.hero.preview.warning}</small>
+      </div>
+    </figure>
+    <div class="v3-hero-actions v3-actions">
+      <a class="v3-button v3-button-coral" href={sample}>{v3.actions.sample}</a>
+      <a class="v3-button v3-button-outline" href={pilot}>{v3.actions.pilot}</a>
+    </div>
+    <ul class="v3-principles" aria-label="Research principles">
+      {v3.hero.principles.map((principle) => <li>{principle}</li>)}
+    </ul>
+  </div>
+</section>
+
+<section class="v3-area" aria-labelledby="area-title">
+  <div class="v3-wrap v3-area-grid">
+    <div>
+      <p class="v3-kicker">{v3.area.eyebrow}</p>
+      <h2 id="area-title">{v3.area.title[0]}<br />{v3.area.title[1]}</h2>
+      <p class="v3-area-copy">{v3.area.body}</p>
+    </div>
+    <OpportunityMap market={market} editorial />
+    <div class="v3-mobile-actions v3-actions">
+      <a class="v3-button v3-button-coral" href={sample}>{v3.actions.sample}</a>
+      <a class="v3-button v3-button-paper" href={pilot}>{v3.actions.pilot}</a>
+    </div>
+  </div>
+</section>
+
+<section class="v3-sample" id="sample" aria-labelledby="sample-title">
+  <div class="v3-wrap v3-sample-grid">
+    <div class="v3-sample-copy">
+      <p class="v3-kicker">{v3.sample.eyebrow}</p>
+      <h2 id="sample-title">{v3.sample.title[0]}<br />{v3.sample.title[1]}</h2>
+      <p>{v3.sample.body}</p>
+      <figure class="v3-sector-photo">
+        <img src={market.homeImages.mechanical} alt="Generated illustration of a commercial plant room with heating pipes and mechanical services" width="1536" height="1024" loading="lazy" decoding="async" />
+        <figcaption>{v3.images.mechanical}</figcaption>
+      </figure>
+      <a class="v3-text-link" href={sample}>{v3.sample.link} <span aria-hidden="true">→</span></a>
+    </div>
+    <article class="v3-brief" aria-labelledby="brief-title">
+      <div class="v3-brief-top"><span>{v3.brief.label}</span><span>{v3.brief.status}</span></div>
+      <div class="v3-brief-body">
+        <h3 id="brief-title">{v3.brief.title}</h3>
+        <p class="v3-brief-location">{market.sampleLocation}</p>
+        <dl class="v3-brief-value"><dt>{v3.brief.valueLabel}</dt><dd>{market.projectValue}</dd></dl>
+        <p class="v3-value-note">{v3.brief.valueNote}</p>
+        <dl class="v3-brief-rows">
+          {v3.brief.rows.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}
+        </dl>
+        <p class="v3-disclaimer">{content.card.disclaimer}</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="v3-deliverables" aria-labelledby="deliverables-title">
+  <div class="v3-wrap">
+    <p class="v3-kicker">{v3.deliverables.eyebrow}</p>
+    <h2 id="deliverables-title">{v3.deliverables.title}</h2>
+    <div class="v3-deliverables-grid">
+      {v3.deliverables.items.map((item, index) => <article><span class="v3-number" aria-hidden="true">0{index + 1}</span><div><h3>{item.title}</h3><p>{item.body}</p></div></article>)}
+    </div>
+  </div>
+</section>
+
+<section class="v3-process" id="how-it-works" aria-labelledby="process-title">
+  <div class="v3-wrap">
+    <h2 id="process-title">{v3.process.title}</h2>
+    <ol class="v3-process-grid">
+      {v3.process.steps.map((step, index) => <li><span class="v3-step-number" aria-hidden="true">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></li>)}
+    </ol>
+    <p class="v3-process-note">{v3.process.note}</p>
+  </div>
+</section>
+
+<section class="v3-pilot" id="pilot" aria-labelledby="pilot-title">
+  <div class="v3-wrap v3-pilot-grid">
+    <div>
+      <p class="v3-kicker">{v3.pilot.eyebrow}</p>
+      <h2 id="pilot-title">{content.pilot.title[0]}<br />{content.pilot.title[1]}</h2>
+      <figure class="v3-sector-photo">
+        <img src={market.homeImages.rooftop} alt={`Generated illustration of rooftop heating and ventilation equipment above a ${market.adjective} cityscape`} width="1536" height="768" loading="lazy" decoding="async" />
+        <figcaption>{v3.images.rooftop}</figcaption>
+      </figure>
+    </div>
+    <AtlasPilotOffer market={market} features={content.pilot.features} cta={content.pilot.cta} />
+  </div>
+</section>
+
+<section class="v3-founder" aria-labelledby="founder-title">
+  <div class="v3-wrap v3-founder-grid">
+    <div><p class="v3-kicker">{v3.founder.eyebrow}</p><h2 id="founder-title">{content.founder.title[0]}<br />{content.founder.title[1]}</h2></div>
+    <div>{v3.founder.paragraphs.map((paragraph) => <p>{paragraph}</p>)}<a class="v3-text-link" href={marketPath(market, "/about/")}>{v3.founder.link} <span aria-hidden="true">→</span></a></div>
+  </div>
+</section>
+
+<AtlasCTA market={market} content={content} />

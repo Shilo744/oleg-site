@@ -1,0 +1,20 @@
+---
+import Logo from "./Logo.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content = {} } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="container footer-top">
+    <div><Logo href={marketPath(market)} /><p>{content.descriptor || market.descriptor}</p></div><div
+      class="footer-links"
+    >
+      <a href={marketPath(market, "/sample-opportunity/")}>{content.sample || "Sample opportunity"}</a><a href={marketPath(market, "/about/")}
+        >{content.about || "About Atlas"}</a
+      ><a href={marketPath(market, "/contact/")}>{content.contact || "Contact"}</a>
+    </div>
+  </div><div class="container footer-bottom">
+    <span>© {new Date().getFullYear()} Atlas</span><span
+      >{content.statement || "Independent. Founder-led. Focused on your next project."}</span>
+  </div>
+</footer>

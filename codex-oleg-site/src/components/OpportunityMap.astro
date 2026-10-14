@@ -1,0 +1,83 @@
+---
+const { market, editorial = false } = Astro.props;
+const { map } = market;
+const mapWidth = Number(map.viewBox.split(" ")[2]);
+---
+
+<div class:list={["map-panel", {"map-panel--editorial": editorial}]} data-market={market.id} aria-label={`Illustrative ${market.countryLong} commercial project map`}>
+  <div class="map-heading">
+    <span>{market.country.toUpperCase()} OPPORTUNITY MAP</span><span>ILLUSTRATIVE PROJECTS</span>
+  </div>
+  <div class="map-stage">
+    <svg class="opportunity-map" viewBox={map.viewBox} role="group" aria-label={`${market.countryLong} with illustrative opportunity markers`}>
+      <path class="map-land" d={map.path}></path>
+      {!editorial && map.labels.map(([label, x, y]) => <text class="map-label" x={x} y={y}>{label}</text>)}
+      {map.locations.map(([city, lon, lat]) => {
+        const [x, y] = map.projection([Number(lon), Number(lat)]);
+        const demo = map.demos[city];
+        return demo ? (
+          <g class="map-marker" tabindex="0" role="button"
+            aria-label={`Preview illustrative ${demo[0].toLowerCase()} in ${city}`}
+            aria-pressed="false" aria-controls="map-preview"
+            data-city={city} data-title={demo[0]} data-value={demo[1]} data-scope={demo[2]}>
+            {city === map.featuredCity && <circle class="map-ring" cx={x} cy={y} r="6" />}
+            <circle class="map-hit" cx={x} cy={y} r="19" />
+            <circle cx={x} cy={y} r="6" />
+            {editorial && <text class="map-city" x={x > mapWidth * .7 ? x - 14 : x + 14} y={y + 5} text-anchor={x > mapWidth * .7 ? "end" : "start"}>{city}</text>}
+          </g>
+        ) : (
+          <circle cx={x} cy={y} r="3.6" fill="#d74c43" stroke="#f7f7f5" stroke-width="1.6" aria-hidden="true" />
+        );
+      })}
+    </svg>
+  </div>
+  <div class="map-preview" id="map-preview" hidden>
+    <button class="preview-close" aria-label="Close opportunity preview">×</button>
+    <div class="preview-label">Illustrative opportunity</div>
+    <h3 data-preview-title></h3><p data-preview-city></p><p data-preview-value></p><p data-preview-scope></p>
+    {editorial && <p class="map-preview-warning">Fictional example. Not a live opportunity. Any value shown is the assumed total project value.</p>}
+  </div>
+  <div class="map-key"><i aria-hidden="true"></i><span>{editorial ? "Illustrative locations — not live opportunities" : "Commercial project signals"}</span>{!editorial && <><span aria-hidden="true">·</span><span>Explore the larger markers</span></>}</div>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>(".map-panel").forEach((panel) => {
+    if (panel.dataset.ready) return;
+    panel.dataset.ready = "true";
+    const preview = panel.querySelector<HTMLElement>(".map-preview")!;
+    const markers = Array.from(panel.querySelectorAll<SVGGElement>(".map-marker"));
+    let active: SVGGElement | null = null;
+    let restoringFocus = false;
+    const close = (restore = false) => {
+      preview.hidden = true;
+      markers.forEach((marker) => marker.setAttribute("aria-pressed", "false"));
+      if (restore) {
+        restoringFocus = true;
+        active?.focus();
+        restoringFocus = false;
+      }
+      active = null;
+    };
+    const show = (marker: SVGGElement) => {
+      active = marker;
+      markers.forEach((item) => item.setAttribute("aria-pressed", String(item === marker)));
+      for (const key of ["title", "city", "value", "scope"])
+        preview.querySelector(`[data-preview-${key}]`)!.textContent = marker.dataset[key] || "";
+      preview.hidden = false;
+    };
+    markers.forEach((marker) => {
+      marker.addEventListener("mouseenter", () => show(marker));
+      marker.addEventListener("focus", () => { if (!restoringFocus) show(marker); });
+      marker.addEventListener("click", () => show(marker));
+      marker.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); show(marker); }
+      });
+    });
+    panel.querySelector(".preview-close")!.addEventListener("click", () => close(true));
+    panel.addEventListener("mouseleave", () => { if (!panel.contains(document.activeElement)) close(); });
+    panel.addEventListener("focusout", () => setTimeout(() => { if (!panel.contains(document.activeElement)) close(); }, 0));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !preview.hidden) { event.preventDefault(); close(true); }
+    });
+    document.addEventListener("click", (event) => { if (!panel.contains(event.target as Node)) close(); });
+  });
+</script>

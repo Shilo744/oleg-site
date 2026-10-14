@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MarketAbout from "../../components/MarketAbout.astro";
+import { markets } from "../../data/markets.js";
+---
+<BaseLayout marketId="de" title="About Atlas — German project intelligence" description="Atlas brings founder-led business intelligence and information-monitoring experience to German commercial HVAC project research.">
+  <MarketAbout market={markets.de} />
+</BaseLayout>

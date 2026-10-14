@@ -1,0 +1,32 @@
+---
+import StepIcon from "./StepIcon.astro";
+const { content } = Astro.props;
+const steps = content?.steps || [
+  { number: "01", title: "Public project signal", body: "A planning application, project announcement or reported development." },
+  { number: "02", title: "Research & qualification", body: "We investigate the project, its timing and the organisations involved." },
+  { number: "03", title: "HVAC relevance", body: "We assess the potential fit for your services, capacity and coverage." },
+  { number: "04", title: "Delivered with direction", body: "You receive a concise opportunity brief and a clear next action." },
+];
+---
+<section class="section process" id="how-it-works">
+  <div class="container">
+    <div data-reveal><div class="eyebrow">{content?.eyebrow || "How it works"}</div><h2>
+      {content ? content.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>From public signal to<br />commercial opportunity.</>}
+    </h2></div>{content?.intro && <p class="process-intro" data-reveal>{content.intro}</p>}<div class="steps" data-reveal="steps">
+      {
+        steps.map(({ number, title, body }, i) => (
+          <div class="step" style={`--i:${i}`}>
+            <>
+              <div class="step-number">
+                <span>{number}</span>
+                <StepIcon index={i} />
+              </div>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </>
+          </div>
+        ))
+      }
+    </div>{content?.note && <p class="process-note" data-reveal>{content.note}</p>}
+  </div>
+</section>

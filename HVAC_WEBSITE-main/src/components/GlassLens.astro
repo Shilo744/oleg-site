@@ -1,0 +1,57 @@
+---
+// Frosted glass that also magnifies what is under it a little.
+// Mark an element with data-glass="1.05" (the magnification). The effect is added only on
+// Chromium browsers. Other browsers keep the plain frosted blur from the CSS.
+---
+
+<script>
+  const chromium = /Chrome\//.test(navigator.userAgent);
+  const calm = matchMedia("(prefers-reduced-transparency: reduce)").matches;
+  if (chromium && !calm && document.body.dataset.market === "cz") {
+    // One small map: red grows left to right, green grows top to bottom, blue stays neutral.
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const image = ctx.createImageData(64, 64);
+      for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+        const o = (y * 64 + x) * 4;
+        image.data[o] = (255 * x) / 63;
+        image.data[o + 1] = (255 * y) / 63;
+        image.data[o + 2] = 128;
+        image.data[o + 3] = 255;
+      }
+      ctx.putImageData(image, 0, 0);
+      const href = canvas.toDataURL();
+      const holder = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      holder.setAttribute("width", "0");
+      holder.setAttribute("height", "0");
+      holder.setAttribute("aria-hidden", "true");
+      holder.style.position = "absolute";
+      document.body.appendChild(holder);
+      document.querySelectorAll<HTMLElement>("[data-glass]").forEach((element, index) => {
+        const magnify = Number(element.dataset.glass) || 1.05;
+        const id = `glass-${index}`;
+        holder.insertAdjacentHTML("beforeend", `<filter id="${id}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feImage href="${href}" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="B" result="across"/><feDisplacementMap in="across" in2="map" scale="0" xChannelSelector="B" yChannelSelector="G"/></filter>`);
+        const filter = holder.querySelector(`#${id}`)!;
+        const update = () => {
+          const width = element.offsetWidth, height = element.offsetHeight;
+          if (!width || !height) return;
+          const k = 1 - 1 / magnify;
+          for (const node of [filter, filter.querySelector("feImage")!]) {
+            node.setAttribute("width", String(width));
+            node.setAttribute("height", String(height));
+          }
+          const [across, down] = Array.from(filter.querySelectorAll("feDisplacementMap"));
+          across.setAttribute("scale", String(-k * width));
+          down.setAttribute("scale", String(-k * height));
+          const value = `url(#${id}) blur(9px) saturate(1.5)`;
+          element.style.backdropFilter = value;
+          element.style.setProperty("-webkit-backdrop-filter", value);
+        };
+        new ResizeObserver(update).observe(element);
+        update();
+      });
+    }
+  }
+</script>

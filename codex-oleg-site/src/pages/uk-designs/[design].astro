@@ -1,0 +1,10 @@
+---
+import { ukDesigns } from '../../data/uk-designs.js';
+import UKDesignLayout from '../../layouts/UKDesignLayout.astro';
+import UKDesignHome from '../../components/UKDesignHome.astro';
+export function getStaticPaths() {
+  return ukDesigns.map(design => ({ params: { design: design.id }, props: { design } }));
+}
+const { design } = Astro.props;
+---
+<UKDesignLayout design={design}><UKDesignHome design={design} /></UKDesignLayout>

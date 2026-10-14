@@ -1,0 +1,87 @@
+---
+import { markets, getMarketContent } from '../data/markets.js';
+import OpportunityMap from './OpportunityMap.astro';
+const { design } = Astro.props;
+const market = { ...markets.uk, map: { ...markets.uk.map, viewBox: '35 -65 500 740' } };
+const content = getMarketContent(market).home;
+const copy = content.v3;
+const hero = `/images/uk-designs/${design.id}-hero.webp`;
+const minimal = design.id === 'minimal';
+const immersive = design.id === 'immersive';
+const icons = [
+  'M12 3v18M3 12h18M5 5l14 14M19 5L5 19',
+  'M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h5',
+  'M4 12h16M14 6l6 6-6 6',
+  'M3 5h18v14H3zM7 9h10M7 13h6',
+];
+---
+<header class="design-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#main" aria-label="Atlas home">Atlas<span>.</span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="design-navigation">Menu <span aria-hidden="true">☰</span></button>
+    <nav id="design-navigation" aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a><a href="#sample">Sample opportunity</a><a href="#pilot">The pilot</a><a href="#about">About</a>
+      <div class="countries" aria-label="Market preview"><span aria-current="page">UK</span><span aria-hidden="true">/</span><span aria-disabled="true" title="Not connected in this preview">CZ</span><span aria-hidden="true">/</span><span aria-disabled="true" title="Not connected in this preview">DE</span></div>
+      <button class="button coral" disabled title="Contact page is not developed for this preview">Contact <span aria-hidden="true">↗</span></button>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <section class="design-hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">UK commercial project intelligence</p>
+        <h1 id="hero-title">Find UK HVAC<br />projects <em>worth<br class="desktop-break" /> pursuing.</em></h1>
+        <p class="hero-intro">{copy.hero.body}</p>
+        <div class="actions hero-actions"><a class="button coral" href="#sample">View sample brief <span aria-hidden="true">↗</span></a><a class="button outline" href="#pilot">Explore the pilot</a></div>
+        <ul class="principles">{copy.hero.principles.map(item => <li>{item}</li>)}</ul>
+      </div>
+      <figure class="hero-image"><img src={hero} alt={immersive ? 'Generated sector illustration of an engineer reviewing rooftop building services in London' : 'Generated sector illustration of British commercial architecture'} width={minimal ? 1536 : 1774} height={minimal ? 1024 : 887} fetchpriority="high" /><figcaption>Generated sector imagery</figcaption></figure>
+      {immersive && <aside class="hero-glass"><span class="eyebrow">Research, with context</span><strong>Signals → evidence → next steps</strong><p>Public sources. Human review.<br />Uncertainty kept visible.</p></aside>}
+    </div>
+    <div class="hero-bottom wrap"><span>Independent research for commercial HVAC contractors</span><span aria-hidden="true">SCROLL TO EXPLORE ↓</span></div>
+  </section>
+  <section class="design-area section" aria-labelledby="area-title">
+    <div class="wrap area-grid">
+      <div class="section-copy" data-reveal><p class="eyebrow">01 / The research area</p><h2 id="area-title">UK focus.<br /><em>Local context.</em></h2><p>{copy.area.body}</p><p class="muted">Commercial developments. Refurbishments. Building services. A focused view of the projects that may fit your business.</p><a href="#sample" class="text-link">Explore a sample <span aria-hidden="true">↗</span></a></div>
+      <div class="map-composition" data-reveal><OpportunityMap market={market} editorial /><div class="map-caption"><span>UNITED KINGDOM</span><span>Public information / human review</span></div></div>
+      <div class="actions mobile-actions"><a class="button coral" href="#sample">View sample brief</a><a class="button outline" href="#pilot">Explore the pilot</a></div>
+    </div>
+  </section>
+  <section class="design-sample section" id="sample" aria-labelledby="sample-title">
+    <div class="wrap sample-grid">
+      <div class="section-copy" data-reveal><p class="eyebrow">02 / See the product</p><h2 id="sample-title">Evidence.<br />Questions.<br /><em>Direction.</em></h2><p>{copy.sample.body}</p><p class="muted">A fictional hotel scenario shows how facts, possible HVAC scope and open questions fit into one clear brief.</p><button class="text-link" disabled title="The full sample page is not developed for this preview">Read the full sample brief <span aria-hidden="true">↗</span></button></div>
+      <div class="brief-stage" data-reveal>
+        <article class="sample-paper" aria-labelledby="brief-title"><div class="paper-head"><strong>Atlas<span>.</span></strong><span>SAMPLE BRIEF / 001</span></div><p class="sample-tag">Fictional example</p><h3 id="brief-title">{copy.brief.title}</h3><p>{market.sampleLocation}</p><div class="paper-value"><span>{copy.brief.valueLabel}</span><strong>{market.projectValue}</strong><small>{copy.brief.valueNote}</small></div><dl>{copy.brief.rows.map(([term, value]) => <div><dt>{term}</dt><dd>{value}</dd></div>)}</dl><p class="paper-warning">{content.card.disclaimer}</p></article>
+      </div>
+      <figure class="sample-photo" data-reveal><img src={market.homeImages.mechanical} alt="Generated sector illustration of commercial heating pipes and mechanical services" width="1536" height="1024" loading="lazy" /><figcaption>Generated sector imagery / Mechanical services</figcaption></figure>
+    </div>
+  </section>
+  <section class="design-deliverables section" aria-labelledby="deliverables-title">
+    <div class="wrap deliverable-layout"><div data-reveal><p class="eyebrow">03 / What you receive</p><h2 id="deliverables-title">Enough context<br /><em>to decide.</em></h2></div><div class="deliverables-grid">{copy.deliverables.items.map((item, index) => <article data-reveal><span class="item-number" aria-hidden="true">0{index + 1}</span><svg viewBox="0 0 24 24" class="line-icon" aria-hidden="true"><path d={icons[index]} /></svg><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></div>
+  </section>
+  <section class="design-process section" id="how-it-works" aria-labelledby="process-title">
+    <div class="wrap"><div class="process-heading" data-reveal><p class="eyebrow">The research process</p><h2 id="process-title">From signal <em>to decision.</em></h2></div><ol class="process-grid">{copy.process.steps.map((step, index) => <li data-reveal><div class="step-symbol"><svg viewBox="0 0 24 24" class="line-icon" aria-hidden="true"><path d={icons[index]} /></svg><span aria-hidden="true">0{index + 1}</span></div><h3>{step.title}</h3><p>{step.body}</p></li>)}</ol><p class="process-note">{copy.process.note}</p></div>
+  </section>
+  <section class="design-pilot section" id="pilot" aria-labelledby="pilot-title">
+    <div class="wrap pilot-grid"><div class="pilot-intro" data-reveal><p class="eyebrow">A focused way to test Atlas</p><h2 id="pilot-title">Four weeks.<br /><em>Twelve researched<br />signals.</em></h2><p>Research shaped around your business. A clear way to assess the value of each brief.</p></div><figure class="pilot-photo"><img src={market.homeImages.rooftop} alt="Generated sector illustration of rooftop ventilation equipment above a British city" width="1536" height="768" loading="lazy" /><figcaption>Generated sector imagery / Building services</figcaption></figure><div class="pilot-offer" data-reveal><p class="eyebrow">The founding pilot</p><p class="price">{market.pilotPrice.split(' total')[0]}<small>Total / 4-week pilot</small></p><ul>{content.pilot.features.map(item => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul><button class="button coral" disabled title="Contact page is not developed for this preview">Discuss the pilot <span aria-hidden="true">↗</span></button></div></div>
+  </section>
+  <section class="design-founder section" id="about" aria-labelledby="founder-title">
+    <div class="wrap founder-grid"><figure data-reveal><img src="/images/uk-designs/minimal-hero.webp" alt="Generated sector illustration of British limestone architecture" width="1536" height="1024" loading="lazy" /><figcaption>Generated sector imagery / British architecture</figcaption></figure><div data-reveal><p class="eyebrow">04 / The person behind the research</p><h2 id="founder-title">Founder-led.<br /><em>Direct and accountable.</em></h2>{copy.founder.paragraphs.map(p => <p>{p}</p>)}<button class="text-link" disabled title="About page is not developed for this preview">About the approach <span aria-hidden="true">↗</span></button></div></div>
+  </section>
+  <section class="design-final section" aria-labelledby="final-title"><div class="wrap final-inner" data-reveal><div><p class="eyebrow">Make a clearer decision</p><h2 id="final-title">Start with <em>the sample.</em></h2><p>{copy.final.body}</p></div><div class="actions"><a href="#sample" class="button coral">View sample brief <span aria-hidden="true">↗</span></a><button class="button outline" disabled title="Contact page is not developed for this preview">Discuss the pilot</button></div></div></section>
+</main>
+<footer class="design-footer"><div class="wrap"><div class="footer-top"><a class="brand" href="#main">Atlas<span>.</span></a><p>Project intelligence for UK<br />commercial HVAC contractors.</p><div><a href="#how-it-works">How it works</a><a href="#sample">Sample brief</a><a href="#pilot">The pilot</a><a href="#about">About</a></div></div><div class="footer-bottom"><span>Independent. Founder-led. Clear about what is known.</span><span>UK / Design preview</span></div><p class="preview-notice">Landing page preview. Contact, full sample and about pages are not connected. Images are generated sector illustrations.</p><a class="back-designs" href="/uk-designs/">← Compare the three designs</a></div></footer>
+<script>
+  const menu = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.querySelector<HTMLElement>('#design-navigation');
+  const closeMenu = (focus = false) => { menu?.setAttribute('aria-expanded', 'false'); nav?.classList.remove('is-open'); if (focus) menu?.focus(); };
+  menu?.addEventListener('click', () => { const open = menu.getAttribute('aria-expanded') !== 'true'; menu.setAttribute('aria-expanded', String(open)); nav?.classList.toggle('is-open', open); });
+  nav?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => closeMenu()));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu?.getAttribute('aria-expanded') === 'true') closeMenu(true); });
+  window.matchMedia('(min-width: 1001px)').addEventListener('change', () => closeMenu());
+  if (document.body.dataset.ukDesign === 'immersive' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: .08 });
+    document.querySelectorAll('[data-reveal]').forEach(el => { el.classList.add('will-reveal'); observer.observe(el); });
+  }
+</script>

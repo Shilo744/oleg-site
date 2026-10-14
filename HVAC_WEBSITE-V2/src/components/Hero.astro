@@ -1,0 +1,33 @@
+---
+import OpportunityMap from "./OpportunityMap.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+const trustIcons = ["⌖", "✓", "↗"];
+// Split the headline into words so each word can slide in.
+let wordIndex = 0;
+const lastLine = content.title.length - 1;
+---
+
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"><span class="hero-topo"></span></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">{content.eyebrow}</div><h1>
+        {content.title.map((line, index) => {
+          const words = line.split(" ").map((word) => <><span class="w"><span class="w-in" style={`--i:${wordIndex++}`}>{word}</span></span>{" "}</>);
+          return <>{index > 0 && <br />}{index === lastLine ? <em>{words}</em> : words}</>;
+        })}
+      </h1><p>{content.body}</p>
+    </div><OpportunityMap market={market} labels={content.mapPreview} /><div class="hero-actions">
+      <div class="buttons">
+        <a class="button button-primary" href={marketPath(market, "/sample-opportunity/")}
+          >{content.primary} <span aria-hidden="true">↗</span></a
+        ><a class="button button-secondary" href={`${marketPath(market)}#pilot`}
+          >{content.secondary} <span aria-hidden="true">→</span></a>
+      </div><p class="microcopy">{content.microcopy}</p>
+    </div>
+  </div>
+  <div class="container trust-strip">
+    {content.trust.map((item, index) => <span><b aria-hidden="true">{trustIcons[index]}</b> {item}</span>)}
+  </div>
+</section>

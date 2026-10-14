@@ -1,0 +1,11 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+const copy = content.v3.final;
+---
+<section class="v3-final" aria-labelledby="final-title">
+  <div class="v3-wrap v3-final-grid">
+    <div><h2 id="final-title">{copy.title}</h2><p>{copy.body}</p></div>
+    <div class="v3-actions"><a class="v3-button v3-button-navy" href={marketPath(market, "/sample-opportunity/")}>{copy.primary}</a><a class="v3-button v3-button-paper" href={marketPath(market, "/contact/")}>{content.pilot.cta}</a></div>
+  </div>
+</section>

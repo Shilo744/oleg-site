@@ -1,0 +1,445 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, labels = {} } = Astro.props;
+const { map } = market;
+
+// A calmer outline for the map: drop fine detail, then round the corners.
+function stylise(d, tolerance = 1.6) {
+  const distance = ([x, y], [x1, y1], [x2, y2]) => {
+    const dx = x2 - x1, dy = y2 - y1, length = Math.hypot(dx, dy);
+    return length ? Math.abs(dy * x - dx * y + x2 * y1 - y2 * x1) / length : Math.hypot(x - x1, y - y1);
+  };
+  const simplify = (points) => {
+    if (points.length < 3) return points;
+    let far = 0, index = 0;
+    for (let i = 1; i < points.length - 1; i++) {
+      const gap = distance(points[i], points[0], points.at(-1));
+      if (gap > far) { far = gap; index = i; }
+    }
+    if (far <= tolerance) return [points[0], points.at(-1)];
+    return [...simplify(points.slice(0, index + 1)).slice(0, -1), ...simplify(points.slice(index))];
+  };
+  const round = (ring) => {
+    let points = ring;
+    for (let pass = 0; pass < 2; pass++) {
+      const next = [];
+      for (let i = 0; i < points.length; i++) {
+        const [x1, y1] = points[i], [x2, y2] = points[(i + 1) % points.length];
+        next.push([x1 * 0.75 + x2 * 0.25, y1 * 0.75 + y2 * 0.25], [x1 * 0.25 + x2 * 0.75, y1 * 0.25 + y2 * 0.75]);
+      }
+      points = next;
+    }
+    return points;
+  };
+  return d.split("M").filter(Boolean).map((ring) => {
+    const points = ring.replace("Z", "").split("L").map((pair) => pair.split(",").map(Number));
+    const middle = Math.floor(points.length / 2);
+    const closed = [...simplify(points.slice(0, middle + 1)).slice(0, -1), ...simplify(points.slice(middle))];
+    if (closed.length < 4) return "";
+    return "M" + round(closed).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join("L") + "Z";
+  }).join("");
+}
+const skylines = map.skylines || null;
+const rich = true;
+const landPath = stylise(map.path, map.simplify);
+const points = Object.fromEntries(map.locations.map(([city, lon, lat]) => [city, map.projection([Number(lon), Number(lat)])]));
+const [vx, vy, vw, vh] = map.viewBox.split(" ").map(Number);
+
+// Curved signal lines from the featured city to the other demo cities,
+// and the numbers the coordinate readout needs to turn a pointer position into lat/lon.
+const demoCities = map.locations.map(([city]) => city).filter((city) => map.demos[city]);
+const links = rich
+  ? demoCities.filter((city) => city !== map.featuredCity).map((city) => {
+      const [x1, y1] = points[map.featuredCity];
+      const [x2, y2] = points[city];
+      const dx = x2 - x1, dy = y2 - y1, length = Math.hypot(dx, dy) || 1;
+      let nx = -dy / length, ny = dx / length;
+      if (ny > 0) { nx = -nx; ny = -ny; }
+      const bend = length * 0.2;
+      return { city, d: `M${x1.toFixed(1)},${y1.toFixed(1)}Q${((x1 + x2) / 2 + nx * bend).toFixed(1)},${((y1 + y2) / 2 + ny * bend).toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}` };
+    })
+  : [];
+// Rich preview cards. Each demo city has a template with its drawing, facts and checks.
+const details = rich && map.details ? map.details : null;
+// 51.5 N and -0.12 E become "51.500° N · 0.120° W".
+const format = (lat, lon) => `${Math.abs(lat).toFixed(3)}° ${lat < 0 ? "S" : "N"} · ${Math.abs(lon).toFixed(3)}° ${lon < 0 ? "W" : "E"}`;
+const coordsOf = (city) => {
+  const [, lon, lat] = map.locations.find(([name]) => name === city);
+  return format(Number(lat), Number(lon));
+};
+const valueOf = (demo) => demo[1].match(/^(?:[£€$]\s?[\d.,]+m?|[\d.,]+m? ?Kč)/)?.[0] ?? null;
+const text = {
+  label: "Illustrative opportunity", sector: "Sector", value: "Total project value", valueNone: "Not stated", scope: "Potential scope",
+  checks: "What to check first", model: "Illustrative model", note: "Prompts to investigate. Not specifications.", chip: "Illustrative only", link: "Read the sample brief",
+  ...labels,
+};
+const [[, lonA, latA], [, lonB, latB]] = [map.locations[0], map.locations.at(-1)];
+const [pa, pb] = [points[map.locations[0][0]], points[map.locations.at(-1)[0]]];
+const scaleX = (pb[0] - pa[0]) / (lonB - lonA), scaleY = (pb[1] - pa[1]) / (latB - latA);
+const readout = {
+  ax: scaleX, bx: pa[0] - scaleX * lonA, ay: scaleY, by: pa[1] - scaleY * latA,
+  text: coordsOf(map.featuredCity),
+};
+---
+
+<div class={`map-panel${rich ? " map-rich" : ""}`} data-market={market.id} data-shape={vh > vw ? "portrait" : "landscape"} aria-label={`Illustrative ${market.countryLong} commercial project map`}>
+  <div class="map-heading">
+    <span>{market.country.toUpperCase()} OPPORTUNITY MAP</span><span>ILLUSTRATIVE PROJECTS</span>
+  </div>
+  <div class="map-stage">
+    <svg class="opportunity-map" viewBox={map.viewBox} role="group" aria-label={`${market.countryLong} with illustrative opportunity markers`}>
+      {rich && (
+        <defs>
+          <clipPath id="map-land-clip"><path d={landPath} /></clipPath>
+          <linearGradient id="land-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" /><stop offset="1" stop-color="#f0f1f1" /></linearGradient>
+        </defs>
+      )}
+      <path class="map-land" d={landPath} pathLength={rich ? "1" : undefined}></path>
+      {map.contours && (
+        <g class="map-contours" clip-path="url(#map-land-clip)" aria-hidden="true">
+          <path class="map-contour" d={map.contours.minor}></path>
+          <path class="map-contour is-major" d={map.contours.major}></path>
+        </g>
+      )}
+      {rich && <g class="map-links" aria-hidden="true">{links.map(({ d, city }, k) => <path class="map-link" d={d} data-to={city} style={`--i:${k}`} />)}</g>}
+      {details && <g class="map-cross" aria-hidden="true"><line class="cv" /><line class="ch" /></g>}
+      {map.labels.map(([label, x, y]) => <text class="map-label" x={x} y={y}>{label}</text>)}
+      {map.locations.map(([city, lon, lat]) => {
+        const [x, y] = map.projection([Number(lon), Number(lat)]);
+        const demo = map.demos[city];
+        return demo ? (
+          <g class="map-marker" style={`--i:${demoCities.indexOf(city)}`} tabindex="0" role="button"
+            aria-label={`Preview illustrative ${demo[0].toLowerCase()} in ${city}`}
+            aria-pressed="false" aria-controls="map-preview"
+            data-city={city} data-label={demo[0]} data-cx={x} data-cy={y} data-title={demo[0]} data-value={demo[1]} data-scope={demo[2]}
+            data-coords={details ? coordsOf(city) : undefined}>
+            {details && <><circle class="map-ripple" cx={x} cy={y} r="6" /><circle class="map-ripple r2" cx={x} cy={y} r="6" /></>}
+            {city === map.featuredCity && <circle class="map-ring" cx={x} cy={y} r="6" />}
+            <circle class="map-hit" cx={x} cy={y} r="19" />
+            <circle cx={x} cy={y} r="6" />
+          </g>
+        ) : (
+          <circle class="map-dot" data-city={city} data-label="Commercial project signals" data-cx={x} data-cy={y} cx={x} cy={y} r="3.6" fill="#d74c43" stroke="#f7f7f5" stroke-width="1.6" aria-hidden="true" />
+        );
+      })}
+      {rich && map.locations.filter(([city]) => map.demos[city]).map(([city]) => {
+        const [x, y] = points[city];
+        const left = (map.labelsLeft || []).includes(city) || (!map.labelsLeft && x > vx + vw * 0.7);
+        return <text class="map-city-label" data-for={city} x={left ? x - 13 : x + 13} y={y + 5} text-anchor={left ? "end" : "start"} aria-hidden="true">{city}</text>;
+      })}
+    </svg>
+    {skylines && (
+      <div class="map-lens" aria-hidden="true" inert>
+        <div class="lens-glass"><div class="lens-map"></div><div class="lens-city"></div></div>
+      </div>
+    )}
+  </div>
+  {skylines && Object.entries(skylines).map(([city, sky]) => (
+    <template data-skyline={city}><svg class="scene" viewBox="0 0 160 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><Fragment set:html={sky.scene} /><g class="sc-label"><text class="sc-name" style={`font-size:${city.length > 12 ? 5.4 : city.length > 8 ? 6.6 : 7.8}px`} x="80" y="139" text-anchor="middle">{city.toUpperCase()}</text><text class="sc-sub" x="80" y="146" text-anchor="middle">{text.model}</text></g></svg></template>
+  ))}
+  {details && Object.entries(details).map(([city, detail]) => {
+    const demo = map.demos[city];
+    const value = valueOf(demo);
+    return (
+      <template data-detail={city}>
+        <div class="pv-art" aria-hidden="true" data-scene></div>
+        <div class="pv-main">
+          <div class="preview-label">{text.label}</div>
+          <h3>{demo[0]}</h3>
+          <p class="pv-where">{city} · {coordsOf(city)}</p>
+          <dl class="pv-facts">
+            <div style="--k:0"><dt>{text.sector}</dt><dd>{detail.sector}</dd></div>
+            <div style="--k:1"><dt>{text.value}</dt><dd>{value || text.valueNone}</dd></div>
+            <div class="wide" style="--k:2"><dt>{text.scope}</dt><dd>{demo[2]}</dd></div>
+          </dl>
+        </div>
+        <div class="pv-side">
+          <h4 class="pv-sub">{text.checks}</h4>
+          <ul class="pv-checks">{detail.checks.map((item, k) => <li style={`--k:${k + 2}`}>{item}</li>)}</ul>
+          <p class="pv-note">{text.note}</p>
+        </div>
+        <div class="pv-foot" style="--k:3"><span class="pv-chip">{text.chip}</span>{detail.href && <a class="pv-link" href={marketPath(market, detail.href)}>{text.link} <span aria-hidden="true">↗</span></a>}</div>
+      </template>
+    );
+  })}
+  <div class={`map-preview${details ? " pv-card" : ""}`} id="map-preview" data-glass={details ? undefined : "1.14"} role={details ? "region" : undefined} aria-live={details ? "polite" : undefined} aria-label={details ? "Illustrative opportunity preview" : undefined} hidden>
+    <button class="preview-close" aria-label="Close opportunity preview">×</button>
+    <div class={details ? "pc-compact" : undefined}>
+      <div class="preview-label">Illustrative opportunity</div>
+      <h3 data-preview-title></h3><p data-preview-city></p><p data-preview-value></p><p data-preview-scope></p>
+    </div>
+    {details && <div class="pv" data-preview-body></div>}
+  </div>
+  <div class="map-key"><i></i><span>Commercial project signals</span><span aria-hidden="true">·</span><span>Explore the larger markers</span></div>
+  {rich && <div class="map-readout" aria-hidden="true" data-ax={readout.ax} data-bx={readout.bx} data-ay={readout.ay} data-by={readout.by} data-default={readout.text}>{readout.text}</div>}
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>(".map-panel").forEach((panel) => {
+    if (panel.dataset.ready) return;
+    panel.dataset.ready = "true";
+    const preview = panel.querySelector<HTMLElement>(".map-preview")!;
+    const body = panel.querySelector<HTMLElement>("[data-preview-body]");
+    const stage = panel.querySelector<HTMLElement>(".map-stage");
+    const svg = panel.querySelector<SVGSVGElement>(".opportunity-map");
+    const markers = Array.from(panel.querySelectorAll<SVGGElement>(".map-marker"));
+    const routes = Array.from(panel.querySelectorAll<SVGPathElement>(".map-link"));
+    const names = Array.from(panel.querySelectorAll<SVGTextElement>(".map-city-label"));
+    const crossV = panel.querySelector<SVGLineElement>(".map-cross .cv");
+    const crossH = panel.querySelector<SVGLineElement>(".map-cross .ch");
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sheetMode = () => matchMedia("(hover: none), (max-width: 760px)").matches;
+    let active: SVGGElement | null = null;
+    let closeTimer = 0;
+    let touched = false;
+    let openedAt = 0;
+    let restoring = false;
+
+    // Mark the chosen city on the map: the others fade, its signal line grows, cross lines meet on it.
+    const select = (marker: SVGGElement | null) => {
+      markers.forEach((item) => { item.classList.toggle("is-selected", item === marker); item.setAttribute("aria-pressed", String(item === marker)); });
+      routes.forEach((route) => route.classList.toggle("is-to-selected", Boolean(marker) && route.dataset.to === marker?.dataset.city));
+      names.forEach((name) => name.classList.toggle("is-dim", Boolean(marker) && name.dataset.for !== marker?.dataset.city));
+      if (marker) stage?.setAttribute("data-selected", marker.dataset.city || ""); else stage?.removeAttribute("data-selected");
+      if (crossV && crossH && svg && marker) {
+        const box = svg.viewBox.baseVal;
+        const { cx = "0", cy = "0" } = marker.dataset;
+        crossV.setAttribute("x1", cx); crossV.setAttribute("x2", cx); crossV.setAttribute("y1", String(box.y)); crossV.setAttribute("y2", String(box.y + box.height));
+        crossH.setAttribute("y1", cy); crossH.setAttribute("y2", cy); crossH.setAttribute("x1", String(box.x)); crossH.setAttribute("x2", String(box.x + box.width));
+      }
+    };
+    const close = (restore = false) => {
+      clearTimeout(closeTimer);
+      preview.classList.remove("is-open");
+      preview.hidden = true;
+      preview.style.transform = "";
+      panel.classList.remove("is-sheet-open");
+      select(null);
+      // Give focus back to the marker without opening the card again.
+      if (restore) { restoring = true; active?.focus(); restoring = false; }
+      active = null;
+    };
+    // On a mouse the card stays while the pointer moves from the marker to the card.
+    const closeSoon = () => {
+      clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(() => {
+        if (!preview.matches(":hover") && !panel.contains(document.activeElement)) close();
+      }, 260);
+    };
+    const show = (marker: SVGGElement) => {
+      clearTimeout(closeTimer);
+      const same = active === marker && !preview.hidden;
+      active = marker;
+      select(marker);
+      const city = marker.dataset.city || "";
+      const template = body ? panel.querySelector<HTMLTemplateElement>(`template[data-detail="${CSS.escape(city)}"]`) : null;
+      for (const key of ["title", "city", "value", "scope"])
+        preview.querySelector(`[data-preview-${key}]`)!.textContent = marker.dataset[key] || "";
+      if (template && body && !same) {
+        body.replaceChildren(template.content.cloneNode(true));
+        // the touch sheet shows the city model as its picture
+        const model = panel.querySelector<HTMLTemplateElement>(`template[data-skyline="${CSS.escape(city)}"]`);
+        body.querySelector<HTMLElement>("[data-scene]")?.replaceChildren(...(model ? [model.content.cloneNode(true)] : []));
+      }
+      preview.hidden = false;
+      const panelBox = panel.getBoundingClientRect();
+      const dot = marker.querySelector("circle:not(.map-hit):not(.map-halo):not(.map-ring):not(.map-ripple)")!.getBoundingClientRect();
+      const dotX = dot.left + dot.width / 2 - panelBox.left, dotY = dot.top + dot.height / 2 - panelBox.top;
+      // Small card: the side away from the marker. Rich card: the half of the panel away from the marker.
+      preview.classList.toggle("is-left", dotX > panelBox.width / 2);
+      preview.dataset.pos = dotY > panelBox.height / 2 ? "top" : "bottom";
+      if (!same) {
+        openedAt = performance.now();
+        preview.classList.remove("is-open");
+        void preview.offsetWidth;
+        requestAnimationFrame(() => preview.classList.add("is-open"));
+        if (touched && !reduceMotion) navigator.vibrate?.(10);
+      }
+      panel.classList.toggle("is-sheet-open", Boolean(template) && sheetMode());
+    };
+    markers.forEach((marker) => {
+      marker.addEventListener("pointerdown", (event) => { touched = event.pointerType === "touch"; });
+      marker.addEventListener("mouseenter", () => show(marker));
+      marker.addEventListener("mouseleave", () => { if (!sheetMode() && document.activeElement !== marker) closeSoon(); });
+      marker.addEventListener("focus", () => { if (!restoring) show(marker); });
+      marker.addEventListener("click", () => show(marker));
+      marker.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); show(marker); }
+      });
+    });
+    preview.addEventListener("mouseenter", () => clearTimeout(closeTimer));
+    preview.addEventListener("mouseleave", () => { if (!sheetMode() && !panel.contains(document.activeElement)) closeSoon(); });
+    // A touch sheet closes when you pull it down.
+    let pullFrom = 0, pulled = 0;
+    preview.addEventListener("touchstart", (event) => { pullFrom = event.touches[0].clientY; pulled = 0; }, { passive: true });
+    preview.addEventListener("touchmove", (event) => {
+      if (!sheetMode()) return;
+      pulled = event.touches[0].clientY - pullFrom;
+      if (pulled > 0 && preview.scrollTop <= 0) preview.style.transform = `translateY(${pulled}px)`;
+    }, { passive: true });
+    preview.addEventListener("touchend", () => {
+      if (!sheetMode()) return;
+      if (pulled > 90 && preview.scrollTop <= 0) close(); else preview.style.transform = "";
+      pulled = 0;
+    });
+    const lens = panel.querySelector<HTMLElement>(".map-lens");
+    if (stage && lens && svg && matchMedia("(hover: hover)").matches) {
+      const ZOOM = 2.1, STRENGTH = 0.85, NEAR = 22;
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const zoomBox = lens.querySelector<HTMLElement>(".lens-map")!;
+      const cityBox = lens.querySelector<HTMLElement>(".lens-city")!;
+      let R = 88, W = 356;
+      // Fish-eye: a displacement map that pushes samples outward with the cube of the radius.
+      // The lens size follows the map size, so it is rebuilt when the map is resized.
+      const holder = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      holder.setAttribute("width", "0"); holder.setAttribute("height", "0");
+      holder.setAttribute("aria-hidden", "true"); holder.style.position = "absolute";
+      panel.appendChild(holder);
+      const id = `fisheye-${Math.random().toString(36).slice(2, 8)}`;
+      let builtFor = 0;
+      const build = () => {
+        const D = Math.round(Math.min(Math.max(stage.clientWidth * 0.27, 112), 210));
+        if (D === builtFor) return;
+        builtFor = D;
+        const PAD = Math.round(D / 2);
+        R = D / 2; W = D + PAD * 2;
+        lens.style.setProperty("--lens-d", `${D}px`);
+        lens.style.setProperty("--lens-pad", `${PAD}px`);
+        lens.style.setProperty("--lens-w", `${W}px`);
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = W;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        const image = ctx.createImageData(W, W);
+        const S = 2 * STRENGTH * R;
+        for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+          const dx = x - W / 2 + 0.5, dy = y - W / 2 + 0.5, rr = Math.hypot(dx, dy);
+          const r = Math.min(rr / R, 1), d = STRENGTH * R * r * r * r;
+          const i = (y * W + x) * 4;
+          image.data[i] = 128 + (rr ? (d * dx) / rr / S : 0) * 255;
+          image.data[i + 1] = 128 + (rr ? (d * dy) / rr / S : 0) * 255;
+          image.data[i + 2] = 128;
+          image.data[i + 3] = 255;
+        }
+        ctx.putImageData(image, 0, 0);
+        holder.innerHTML = `<filter id="${id}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${W}" color-interpolation-filters="sRGB"><feImage href="${canvas.toDataURL()}" x="0" y="0" width="${W}" height="${W}" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="${S}" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+        zoomBox.style.filter = `url(#${id})`;
+      };
+      build();
+      let resizeTimer = 0;
+      new ResizeObserver(() => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(build, 120); }).observe(stage);
+      const copy = svg.cloneNode(true) as SVGSVGElement;
+      copy.querySelectorAll(".map-hit").forEach((node) => node.remove());
+      copy.querySelectorAll("[tabindex]").forEach((node) => node.removeAttribute("tabindex"));
+      copy.querySelectorAll(".map-marker").forEach((node) => { node.removeAttribute("role"); node.removeAttribute("aria-label"); });
+      copy.removeAttribute("role"); copy.removeAttribute("aria-label");
+      zoomBox.appendChild(copy);
+      const cities = Array.from(svg.querySelectorAll<SVGElement>("[data-city]"));
+      const dotOf = (node: SVGElement) => node.querySelector("circle:not(.map-hit):not(.map-ring):not(.map-halo)") || node;
+      let shown = "", near: SVGElement | null = null;
+      let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, visible = false;
+      // The pointer events only store the last position. All work runs once per frame in `frame`.
+      // Reads (layout, hit tests) come first, then writes, so the browser does one layout at most per frame.
+      let pointer: { x: number; y: number } | null = null;
+      let lastTime = 0;
+      let sizeW = "", sizeH = "", ox = "", oy = "";
+      let tested = { x: -999, y: -999, inside: false };
+      const setNear = (next: SVGElement | null) => {
+        if (next === near) return;
+        near?.classList.remove("is-near");
+        near = next;
+        near?.classList.add("is-near");
+      };
+      const land = svg.querySelector<SVGGeometryElement>(".map-land");
+      const insideLand = (clientX: number, clientY: number) => {
+        // A pointer that moved less than 2 px keeps the last answer. The test on the country outline is the slow part.
+        if (Math.abs(clientX - tested.x) < 2 && Math.abs(clientY - tested.y) < 2) return tested.inside;
+        const matrix = svg.getScreenCTM();
+        let inside = true;
+        if (land && matrix) {
+          const point = new DOMPoint(clientX, clientY).matrixTransform(matrix.inverse());
+          inside = land.isPointInFill(point) || land.isPointInStroke(point);
+        }
+        tested = { x: clientX, y: clientY, inside };
+        return inside;
+      };
+      const hide = () => {
+        visible = false; pointer = null; lens.classList.remove("is-visible", "is-city"); setNear(null); shown = "";
+        tested = { x: -999, y: -999, inside: false };
+      };
+      const frame = (now: number) => {
+        raf = 0;
+        const dt = Math.min(48, Math.max(8, now - (lastTime || now - 16)));
+        lastTime = now;
+        // 1. Read.
+        const stageBox = stage.getBoundingClientRect();
+        const box = svg.getBoundingClientRect();
+        const event = pointer;
+        pointer = null;
+        if (event) {
+          const outside = event.x < box.left || event.y < box.top || event.x > box.right || event.y > box.bottom || !insideLand(event.x, event.y);
+          if (outside) {
+            hide();
+          } else {
+            let best = NEAR, hit: SVGElement | null = null;
+            for (const node of cities) {
+              const r = dotOf(node).getBoundingClientRect();
+              const d = Math.hypot(event.x - (r.left + r.width / 2), event.y - (r.top + r.height / 2));
+              if (d < best) { best = d; hit = node; }
+            }
+            tx = event.x - stageBox.left; ty = event.y - stageBox.top;
+            if (!visible) { cx = tx; cy = ty; visible = true; }
+            // 2. Write. Class and style changes only when something changed.
+            lens.classList.add("is-visible");
+            setNear(hit);
+            if (!hit) {
+              lens.classList.remove("is-city"); shown = "";
+            } else {
+              const dotBox = dotOf(hit).getBoundingClientRect();
+              const nx = Math.max(-1, Math.min(1, (event.x - (dotBox.left + dotBox.width / 2)) / NEAR)).toFixed(2);
+              const ny = Math.max(-1, Math.min(1, (event.y - (dotBox.top + dotBox.height / 2)) / NEAR)).toFixed(2);
+              if (nx !== ox) { ox = nx; lens.style.setProperty("--ox", nx); }
+              if (ny !== oy) { oy = ny; lens.style.setProperty("--oy", ny); }
+              const city = hit.dataset.city || "";
+              if (city !== shown) {
+                shown = city;
+                const tpl = panel.querySelector<HTMLTemplateElement>(`template[data-skyline="${CSS.escape(city)}"]`);
+                cityBox.replaceChildren();
+                if (tpl) cityBox.appendChild(tpl.content.cloneNode(true));
+              }
+              lens.classList.add("is-city");
+            }
+          }
+        }
+        if (!visible) return;
+        // Ease towards the pointer. The step depends on the time, so it feels the same at 60 and 144 frames per second.
+        const k = reduce ? 1 : 1 - Math.exp(-dt / 55);
+        cx += (tx - cx) * k; cy += (ty - cy) * k;
+        const px = cx - (box.left - stageBox.left), py = cy - (box.top - stageBox.top);
+        lens.style.transform = `translate3d(${(cx - R).toFixed(2)}px, ${(cy - R).toFixed(2)}px, 0)`;
+        // The size of the copy changes only when the map is resized.
+        const w = `${box.width * ZOOM}px`, h = `${box.height * ZOOM}px`;
+        if (w !== sizeW) { sizeW = w; copy.style.width = w; }
+        if (h !== sizeH) { sizeH = h; copy.style.height = h; }
+        copy.style.transform = `translate3d(${(W / 2 - px * ZOOM).toFixed(2)}px, ${(W / 2 - py * ZOOM).toFixed(2)}px, 0)`;
+        if (pointer || Math.hypot(tx - cx, ty - cy) > 0.3) raf = requestAnimationFrame(frame);
+      };
+      const move = (event: PointerEvent) => {
+        if (event.pointerType === "touch") return;
+        pointer = { x: event.clientX, y: event.clientY };
+        if (!raf) raf = requestAnimationFrame(frame);
+      };
+      stage.addEventListener("pointermove", move, { passive: true });
+      stage.addEventListener("pointerenter", move, { passive: true });
+      stage.addEventListener("pointerleave", hide);
+    }
+    panel.querySelector(".preview-close")!.addEventListener("click", () => close(true));
+    panel.addEventListener("mouseleave", () => { if (!sheetMode() && !panel.contains(document.activeElement)) closeSoon(); });
+    panel.addEventListener("focusout", () => setTimeout(() => { if (!sheetMode() && !panel.contains(document.activeElement)) close(); }, 0));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !preview.hidden) { event.preventDefault(); close(true); }
+    });
+    // The dark layer behind a touch sheet belongs to the panel, so a tap on it (the panel itself) also closes.
+    panel.addEventListener("click", (event) => { if (event.target === panel && performance.now() - openedAt > 400) close(); });
+    document.addEventListener("click", (event) => { if (!panel.contains(event.target as Node)) close(); });
+  });
+</script>

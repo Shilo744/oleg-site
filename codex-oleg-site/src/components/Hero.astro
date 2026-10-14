@@ -1,0 +1,35 @@
+---
+import OpportunityMap from "./OpportunityMap.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+---
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      {content ? <><div class="eyebrow">{content.eyebrow}</div><h1>
+        {content.title.map((line, index) => <>{index > 0 && <br />}{index === content.title.length - 1 ? <em>{line}</em> : line}</>)}
+      </h1><p>{content.body}</p></> : <><div class="eyebrow">{market.adjective} commercial HVAC intelligence</div><h1>
+        Your next project.<br />Already on<br /><em>our radar.</em>
+      </h1><p>
+        Find {market.adjective} commercial HVAC projects worth pursuing. We research the
+        opportunities, so you can focus on the right conversations.
+      </p></>}
+    </div><OpportunityMap market={market} /><div class="hero-actions">
+      <div class="buttons">
+        <a class="button button-primary" href={marketPath(market, "/sample-opportunity/")}
+          >{content?.primary || "View a sample opportunity"} <span aria-hidden="true">↗</span></a
+        ><a class="button button-secondary" href={`${marketPath(market)}#pilot`}
+          >{content?.secondary || "Join the founding pilot"} <span aria-hidden="true">→</span></a>
+      </div><p class="microcopy">
+        {content?.microcopy || "Personally researched. Commercially relevant. Ready for your next step."}
+      </p>
+    </div>
+  </div>
+</section><div class="container trust-strip">
+  {content ? <><span><b aria-hidden="true">⌖</b> {content.trust[0]}</span
+  ><span><b aria-hidden="true">✓</b> {content.trust[1]}</span
+  ><span><b aria-hidden="true">↗</b> {content.trust[2]}</span></> : <><span><b aria-hidden="true">⌖</b> Focused on {market.adjective} commercial projects</span
+  ><span><b aria-hidden="true">✓</b> Every opportunity personally reviewed</span
+  ><span><b aria-hidden="true">↗</b> A clear next action, every time</span></>}
+</div>

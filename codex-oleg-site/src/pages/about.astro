@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AtlasDocument from "../components/AtlasDocument.astro";
+import { markets, getMarketContent } from "../data/markets.js";
+const content = getMarketContent(markets.uk);
+---
+<BaseLayout content={content} title="About Atlas — founder-led project intelligence" description="Atlas is a founder-led service bringing business intelligence and information-monitoring experience to UK commercial HVAC project research.">
+  <AtlasDocument market={markets.uk} content={content} page="about" />
+</BaseLayout>

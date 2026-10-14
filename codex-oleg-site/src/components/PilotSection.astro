@@ -1,0 +1,23 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+---
+
+<section class="section white" id="pilot">
+  <div class="container pilot-grid">
+    <div class="pilot-copy">
+      <div class="eyebrow">{content?.eyebrow || "A focused start"}</div><h2>
+        {content ? content.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>Founding<br />Contractor Pilot.</>}
+      </h2><p>
+        {content?.body || <>We’re onboarding a small number of {market.adjective} commercial HVAC contractors. Put
+        the intelligence to work for four weeks, then decide whether it earns a
+        place in your business.</>}
+      </p>
+    </div><div class="pilot-offer">
+      <p class="pilot-price">{market.pilotPrice}</p><ul class="checks">
+        {(content?.features || market.pilotFeatures).map((feature) => <li>{feature}</li>)}
+      </ul><a class="button button-primary" href={marketPath(market, "/contact/")}
+        >{content?.cta || "Discuss the pilot"} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>

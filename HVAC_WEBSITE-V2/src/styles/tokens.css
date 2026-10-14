@@ -1,0 +1,16 @@
+:root {
+  --navy: #17212b;
+  --slate: #25313d;
+  --coral: #f45c52;
+  --paper: #f7f7f5;
+  --white: #fff;
+  --muted: #59636e;
+  --line: #dce0e2;
+  --container: 1400px;
+  --radius: 4px;
+  --space: clamp(64px, 8vw, 110px);
+  font-family: "Manrope Variable", "Manrope Fallback", sans-serif;
+  color: var(--navy);
+  background: var(--paper);
+  font-synthesis: none;
+}

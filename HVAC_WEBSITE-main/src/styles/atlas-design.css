@@ -1,0 +1,1307 @@
+/* Atlas design layer. It styles every market (UK, Czech Republic, Germany).
+   Palette: the logo colours. White, charcoal, a little grey, and coral for buttons and small marks.
+   No blue and no warm tints. Square corners and thin lines, as in the first Atlas design.
+   Quiet motion: reveals, a drawn map, thin lines.
+   Every rule is scoped to body[data-market]. It loads after atlas-map.css.
+   Motion rules keep the final state as the base style, so the page stays
+   complete when animation is off (prefers-reduced-motion). */
+
+html:has(body[data-market]) {
+  scroll-behavior: smooth;
+  background: #fff;
+}
+
+body[data-market] {
+  /* Colour */
+  --white: #fff;
+  --paper: #f7f7f5;
+  --navy: #17212b;
+  --slate: #25313d;
+  --muted: #59636e;
+  --line: #dce0e2;
+  --coral: #f45c52;
+  --coral-ink: #b8382f;
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Size */
+  --cz-gutter: clamp(32px, 6vw, 150px);
+  --cz-container-max: 1500px;
+  --radius: 2px;
+  background: #fff;
+  color: var(--navy);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  /* ---------- Type ---------- */
+  & h1,
+  & h2,
+  & h3 {
+    font-weight: 560;
+    letter-spacing: -0.036em;
+    text-wrap: balance;
+  }
+  & h2 {
+    font-size: clamp(2rem, 1.3vw + 1.55rem, 3.3rem);
+    line-height: 1.07;
+  }
+  & ::selection {
+    background: var(--coral);
+    color: var(--navy);
+  }
+  & .eyebrow {
+    margin-bottom: 24px;
+    font-size: clamp(0.72rem, 0.1vw + 0.7rem, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+  & .eyebrow::before {
+    width: 8px;
+    height: 8px;
+    background: var(--coral);
+  }
+
+  /* ---------- Skip link ---------- */
+  & .skip-link {
+    z-index: 120;
+    padding: 12px 22px;
+    font-weight: 700;
+    color: var(--navy);
+    box-shadow: 0 10px 28px rgba(23, 33, 43, 0.25);
+  }
+
+  /* ---------- Buttons ---------- */
+  & .button {
+    min-height: clamp(48px, 3.2vw, 56px);
+    padding: 0 clamp(20px, 1.8vw, 28px);
+    gap: 22px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+  }
+  & .button > span[aria-hidden="true"] {
+    display: inline-block;
+    transition: transform 0.35s var(--ease);
+  }
+  & .button-primary {
+    background: var(--coral);
+    color: var(--navy);
+  }
+  & .button-primary:hover {
+    background: #ff6f66;
+  }
+  & .button-primary:hover > span[aria-hidden="true"] {
+    transform: translate(2px, -2px);
+  }
+  & .button-secondary {
+    border-color: #b9c0c6;
+    background: transparent;
+    color: var(--navy);
+  }
+  & .button-secondary:hover {
+    border-color: var(--navy);
+    background: rgba(23, 33, 43, 0.04);
+  }
+  & .button-secondary:hover > span[aria-hidden="true"] {
+    transform: translateX(3px);
+  }
+  & .text-link {
+    position: relative;
+    gap: 14px;
+    padding: 0 0 8px;
+    border-bottom: 1px solid rgba(23, 33, 43, 0.28);
+    font-weight: 700;
+  }
+  & .text-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--coral);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease);
+  }
+  & .text-link:hover {
+    text-decoration: none;
+  }
+  & .text-link:hover::after {
+    transform: scaleX(1);
+  }
+  & .text-link span[aria-hidden="true"] {
+    display: inline-block;
+    transition: transform 0.35s var(--ease);
+  }
+  & .text-link:hover span[aria-hidden="true"] {
+    transform: translate(2px, -2px);
+  }
+
+  /* ---------- Header ---------- */
+  & .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    color: var(--navy);
+    background: rgba(255, 255, 255, 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom: 1px solid var(--line);
+    box-shadow: none;
+    view-transition-name: site-header;
+    transition: box-shadow 0.4s;
+  }
+  & .site-header.is-scrolled {
+    box-shadow: 0 12px 30px -26px rgba(23, 33, 43, 0.5);
+  }
+  & .site-header:has(nav.is-open) {
+    background: rgba(255, 255, 255, 0.98);
+  }
+  & .header-inner {
+    min-height: var(--cz-header-height);
+    transition: min-height 0.4s var(--ease);
+  }
+  & .site-header.is-scrolled .header-inner {
+    min-height: calc(var(--cz-header-height) - 12px);
+  }
+  & .brand svg path:first-child {
+    fill: var(--coral);
+  }
+  & .brand-dot {
+    color: var(--coral);
+  }
+  @media (min-width: 801px) {
+    & nav {
+      gap: 4px;
+      margin-left: auto;
+      font-size: var(--cz-nav-font);
+      font-weight: 650;
+    }
+    & nav > a:not(.nav-contact) {
+      position: relative;
+      padding: 10px 14px;
+    }
+    & nav > a:not(.nav-contact)::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 3px;
+      height: 2px;
+      background: var(--coral);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease);
+    }
+    & nav > a:not(.nav-contact):hover {
+      text-decoration: none;
+    }
+    & nav > a:not(.nav-contact):hover::after {
+      transform: scaleX(1);
+    }
+    & .country-switcher {
+      margin: 0 18px 0 14px;
+    }
+  }
+  @media (min-width: 801px) and (max-width: 1050px) {
+    & nav > a:not(.nav-contact) {
+      padding: 10px 8px;
+    }
+    & nav > a:not(.nav-contact)::after {
+      left: 8px;
+      right: 8px;
+    }
+    & .country-switcher {
+      margin: 0 8px;
+    }
+  }
+  & .country-switcher {
+    gap: 0;
+    padding: 2px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: #fff;
+    color: var(--muted);
+    font-size: clamp(0.75rem, 0.1vw + 0.71rem, 0.84rem);
+    font-weight: 750;
+    letter-spacing: 0.06em;
+  }
+  & .country-switcher > span {
+    display: none;
+  }
+  & .country-switcher a {
+    min-width: 38px;
+    padding: 6px 10px;
+    border-radius: 1px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.25s, color 0.25s;
+  }
+  & .country-switcher a:hover {
+    color: var(--navy);
+  }
+  & .country-switcher a[aria-current="page"] {
+    background: var(--navy);
+    color: #fff;
+  }
+  & .nav-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    min-height: clamp(44px, 3vw, 52px);
+    padding: 0 var(--cz-control-pad-x);
+    border: 0;
+    border-radius: 2px;
+    background: var(--navy);
+    color: #fff;
+    transition: background-color 0.25s;
+  }
+  & .nav-contact:hover {
+    background: #2e3d4c;
+    text-decoration: none;
+  }
+  & .nav-contact > span[aria-hidden="true"] {
+    display: inline-block;
+    transition: transform 0.35s var(--ease);
+  }
+  & .nav-contact:hover > span[aria-hidden="true"] {
+    transform: translate(2px, -2px);
+  }
+  & .menu-toggle {
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: #fff;
+    color: var(--navy);
+  }
+  @media (max-width: 800px) {
+    & .country-switcher {
+      align-self: flex-start;
+      margin: 10px 0;
+    }
+    & nav a {
+      padding: 14px 5px;
+    }
+    & nav > a.nav-contact {
+      justify-content: space-between;
+      min-height: 50px;
+      margin-top: 6px;
+      padding: 0 18px;
+    }
+  }
+
+  /* ---------- Hero ---------- */
+  & .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 0;
+    background: #fff;
+  }
+  & .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  & .hero-topo,
+  & .cta-topo,
+  & .page-hero::before {
+    position: absolute;
+    inset: -6%;
+    pointer-events: none;
+    background: radial-gradient(65% 85% at 76% 45%, #17212b, rgba(23, 33, 43, 0.4) 72%);
+    -webkit-mask: url("/topo.svg") center / cover no-repeat;
+    mask: url("/topo.svg") center / cover no-repeat;
+    opacity: 0.1;
+    animation: topo-drift 80s ease-in-out infinite alternate, fade-in 2.4s ease backwards;
+  }
+  /* Contour lines in the hero are a little stronger than on the other pages so they can be seen. */
+  & .hero-topo {
+    opacity: 0.15;
+  }
+  /* Live contour lines in the hero. The canvas is drawn in SiteMotion.astro with the same method as the founder plate, but much slower.
+     While the script has not run (or without it), the still contour image above stays visible. */
+  & .hero-contours {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.6s ease;
+    -webkit-mask-image: radial-gradient(75% 95% at 76% 45%, #000 25%, rgba(0, 0, 0, 0.35) 100%);
+    mask-image: radial-gradient(75% 95% at 76% 45%, #000 25%, rgba(0, 0, 0, 0.35) 100%);
+  }
+  & .hero-bg.is-live .hero-contours {
+    opacity: 0.3;
+  }
+  & .hero-bg.is-live .hero-topo {
+    opacity: 0;
+    animation: none;
+    transition: opacity 1.6s ease;
+  }
+  & .hero-grid {
+    position: relative;
+    z-index: 1;
+    align-items: center;
+    padding-top: clamp(12px, 1.2vw, 20px);
+    padding-bottom: clamp(32px, 3.6vw, 60px);
+  }
+  & .hero-copy {
+    align-self: center;
+    padding-bottom: 0;
+  }
+  & .hero .eyebrow {
+    animation: fade-up 0.9s var(--ease) 0.1s backwards;
+  }
+  & .hero-copy h1 {
+    max-width: 12.5em;
+    font-size: clamp(2.6rem, 2.9vw + 1.3rem, 5rem);
+    font-weight: 300;
+    line-height: 1.04;
+    letter-spacing: -0.042em;
+    color: var(--navy);
+  }
+  & .hero-copy h1 em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  & .w {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
+  & .w-in {
+    display: inline-block;
+    animation: word-up 1s var(--ease) calc(0.2s + var(--i) * 70ms) backwards;
+  }
+  & .hero-copy p {
+    max-width: 34em;
+    margin-top: clamp(18px, 1.8vw, 30px);
+    color: var(--muted);
+    font-size: clamp(1rem, 0.25vw + 0.94rem, 1.15rem);
+    line-height: 1.7;
+    animation: fade-up 1s var(--ease) 0.85s backwards;
+  }
+  & .hero-actions {
+    animation: fade-up 1s var(--ease) 1s backwards;
+  }
+  & .hero .microcopy {
+    margin-top: 20px;
+    color: var(--muted);
+  }
+
+  /* Trust strip: three short lines at the foot of the hero. */
+  & .hero .trust-strip {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 64px);
+    margin: 0 auto;
+    padding: 0 0 clamp(28px, 3vw, 48px);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--muted);
+    animation: fade-up 1s var(--ease) 1.2s backwards;
+  }
+  & .hero .trust-strip span {
+    position: relative;
+    justify-content: flex-start;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  & .hero .trust-strip span::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 36px;
+    height: 2px;
+    background: var(--coral);
+  }
+  & .hero .trust-strip b {
+    color: var(--coral-ink);
+  }
+
+  /* ---------- Map ---------- */
+  /* The map frame is the same size for every market. A wide map (Czech Republic) fills it.
+     A tall map (UK, Germany) sits in the middle of the frame, and the card opens on the free side. */
+  & .map-panel.map-rich[data-market] {
+    --panel-ratio: 1.42;
+    animation: map-in 1.2s var(--ease) 0.25s backwards;
+    aspect-ratio: var(--panel-ratio);
+    min-height: 0;
+    align-self: start;
+  }
+  & .map-panel.map-rich[data-shape="portrait"] {
+    --panel-ratio: 1.26;
+  }
+  & .map-rich .map-stage {
+    position: absolute;
+    inset: 44px 0 40px;
+  }
+  /* A tall map is drawn smaller, so its labels and markers are made larger to read the same. */
+  & .map-panel[data-shape="portrait"] .map-city-label {
+    font-size: 19px;
+  }
+  & .map-panel[data-shape="portrait"] .map-marker circle:not(.map-hit):not(.map-ring):not(.map-ripple),
+  & .map-panel[data-shape="portrait"] .map-ring,
+  & .map-panel[data-shape="portrait"] .map-ripple {
+    r: 7.6px;
+  }
+  & .map-panel[data-shape="portrait"] .map-marker .map-hit {
+    r: 26px !important;
+  }
+  & .map-panel[data-shape="portrait"] .map-dot {
+    r: 3.4px;
+  }
+  & .map-rich::before {
+    content: "";
+    position: absolute;
+    inset: 40px 0 36px;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(23, 33, 43, 0.045) 1px, transparent 1px) 0 0 / 64px 100%,
+      linear-gradient(0deg, rgba(23, 33, 43, 0.045) 1px, transparent 1px) 0 0 / 100% 64px;
+    -webkit-mask: radial-gradient(closest-side, #000 25%, transparent 100%);
+    mask: radial-gradient(closest-side, #000 25%, transparent 100%);
+  }
+  & .map-rich .map-heading {
+    top: 6px;
+    padding: 0;
+  }
+  & .map-rich .map-key {
+    left: 0;
+    bottom: 8px;
+  }
+  & .map-rich .map-stage {
+    inset: 44px 0 40px;
+  }
+  & .map-readout {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    z-index: 2;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    transition: color 0.3s;
+    pointer-events: none;
+  }
+  & .map-readout::before {
+    content: "⌖  ";
+    color: var(--coral-ink);
+  }
+  & .map-readout.is-live {
+    color: var(--navy);
+  }
+  & .map-rich .map-land {
+    fill: url(#land-fill);
+    stroke: #17212b;
+    stroke-opacity: 0.38;
+    stroke-width: 1.1;
+    /* A soft shadow all around the map, and a longer one below it, so the map stands out from the contour lines behind it. */
+    filter: drop-shadow(0 0 9px rgba(23, 33, 43, 0.2)) drop-shadow(0 16px 18px rgba(23, 33, 43, 0.12));
+  }
+  & .map-stage > .opportunity-map .map-land {
+    stroke-dasharray: 1;
+    animation: draw 2.4s var(--ease-in-out) 0.4s backwards, land-in 1.2s ease 1.6s backwards;
+  }
+  & .map-stage > .opportunity-map .map-contours {
+    animation: fade-in 1.8s ease 1.2s backwards;
+  }
+  & .map-link {
+    fill: none;
+    stroke: var(--coral);
+    stroke-opacity: 0.75;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-dasharray: 2 7;
+    animation: fade-in 1.2s ease calc(1.9s + var(--i) * 0.3s) backwards, flow 1.8s linear infinite;
+  }
+  & .map-rich .map-marker circle:not(.map-hit):not(.map-ring) {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pop 0.8s cubic-bezier(0.2, 1.5, 0.4, 1) calc(1.5s + var(--i) * 0.16s) backwards;
+  }
+  & .map-rich .map-ring {
+    opacity: 0;
+    animation: pulse 3.2s ease-out 2.3s infinite;
+  }
+  & .map-rich .map-dot {
+    animation: fade-in 1s ease 1.7s backwards;
+  }
+  & .map-rich .map-city-label {
+    animation: fade-in 1s ease 2.1s backwards;
+  }
+  & .map-rich .map-preview {
+    border-radius: 2px;
+  }
+  & .map-rich .map-preview .preview-label {
+    padding-right: 24px;
+  }
+  /* The lens shows a copy of the map. Keep the copy still. */
+  & .lens-map * {
+    animation: none !important;
+    filter: none !important;
+  }
+  & .lens-map .map-land {
+    stroke-dasharray: none;
+  }
+
+  /* ---------- Sections ---------- */
+  & .section {
+    padding: clamp(72px, 8.5vw, 140px) 0;
+    overflow-x: clip;
+  }
+  & .section.white {
+    background: var(--paper);
+  }
+  & .section-heading {
+    align-items: end;
+    gap: clamp(32px, 5vw, 96px);
+    margin-bottom: clamp(40px, 4.6vw, 76px);
+  }
+  & .section-heading p {
+    max-width: 34em;
+    padding-left: clamp(18px, 2vw, 32px);
+    border-left: 1px solid var(--line);
+    font-size: clamp(1rem, 0.2vw + 0.96rem, 1.12rem);
+    line-height: 1.7;
+  }
+
+  /* What you receive: open columns under a thin line. */
+  & .three-columns {
+    gap: clamp(28px, 3.4vw, 64px);
+  }
+  & .benefit {
+    position: relative;
+    padding-top: clamp(24px, 2.4vw, 36px);
+    border-top: 1px solid #c9cfd3;
+  }
+  & .benefit::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 48px;
+    height: 2px;
+    background: var(--coral);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s var(--ease) calc(var(--d, 0ms) + 0.4s), width 0.6s var(--ease);
+  }
+  & .benefit.is-in::before {
+    transform: scaleX(1);
+  }
+  & .benefit:hover::before {
+    width: 100%;
+    transition-delay: 0s;
+  }
+  & .benefit .number {
+    margin-bottom: clamp(20px, 2.4vw, 36px);
+    font-size: clamp(2.2rem, 2.4vw + 1rem, 3.4rem);
+    font-weight: 300;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: #bcc3c9;
+    transition: color 0.35s;
+  }
+  & .benefit:hover .number {
+    color: var(--coral-ink);
+  }
+  & .benefit h3 {
+    font-size: clamp(1.2rem, 0.5vw + 1.08rem, 1.5rem);
+  }
+  & .benefit p {
+    margin-top: 14px;
+    font-size: clamp(0.95rem, 0.15vw + 0.92rem, 1.05rem);
+    line-height: 1.7;
+  }
+
+  /* How it works */
+  & .process {
+    background: #fff;
+    color: var(--navy);
+    border-block: 1px solid var(--line);
+  }
+  & .process .eyebrow {
+    color: var(--muted);
+  }
+  & .process h2 {
+    color: var(--navy);
+  }
+  & .process-intro {
+    max-width: 44em;
+    color: var(--muted);
+    font-size: clamp(1rem, 0.2vw + 0.96rem, 1.12rem);
+  }
+  & .steps {
+    position: relative;
+    margin-top: clamp(44px, 5vw, 84px);
+    border-top: 0;
+  }
+  & .steps::before,
+  & .steps::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #c9cfd3;
+  }
+  /* The coral rail follows the scroll. SiteMotion sets --rail from 0 to 1 on .steps. Without the script it is full. */
+  & .steps::after {
+    height: 2px;
+    top: -0.5px;
+    background: var(--coral);
+    transform: scaleX(var(--rail, 1));
+    transform-origin: left;
+    transition: transform 0.12s linear;
+  }
+  & .step {
+    position: relative;
+    padding: clamp(30px, 3vw, 48px) clamp(18px, 2vw, 40px) 0 0;
+    transition: opacity 0.5s, transform 0.5s var(--ease);
+  }
+  & .step::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 9px;
+    height: 9px;
+    background: #fff;
+    border: 1.5px solid #9aa3aa;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  /* A square turns coral when the rail reaches it. Without the script all squares are coral. */
+  & .step.is-on::before,
+  html:not(.motion-ready) & .step::before {
+    background: var(--coral);
+    border-color: var(--coral);
+  }
+  & .step .step-number {
+    margin-bottom: 16px;
+    font-size: clamp(2.1rem, 2.4vw + 0.9rem, 3.3rem);
+    font-weight: 300;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: #bcc3c9;
+    transition: color 0.35s;
+  }
+  & .step .step-number span[aria-hidden="true"] {
+    display: none;
+  }
+  & .step h3 {
+    font-size: clamp(1.08rem, 0.4vw + 1rem, 1.32rem);
+    color: var(--navy);
+  }
+  & .step p {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: clamp(0.9rem, 0.15vw + 0.87rem, 1rem);
+    line-height: 1.7;
+  }
+  & .process-note {
+    max-width: 52em;
+    margin-top: clamp(36px, 4vw, 60px);
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  /* Sample brief: square sheets stacked with a hard offset, as in the first design. */
+  & #sample {
+    background: var(--paper);
+  }
+  & .sample-grid {
+    gap: clamp(40px, 6vw, 120px);
+  }
+  & .sample-copy p {
+    font-size: clamp(1rem, 0.2vw + 0.96rem, 1.12rem);
+    line-height: 1.7;
+  }
+  & .report-wrap {
+    position: relative;
+    isolation: isolate;
+  }
+  & .report-wrap::before,
+  & .report-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border: 1px solid var(--line);
+    transition: transform 0.7s var(--ease);
+  }
+  & .report-wrap::before {
+    background: #eceeed;
+    transform: translate(9px, 9px);
+  }
+  & .report-wrap::after {
+    background: #e2e5e4;
+    transform: translate(18px, 18px);
+    z-index: -2;
+  }
+  & .report-wrap:hover::before {
+    transform: translate(14px, 14px);
+  }
+  & .report-wrap:hover::after {
+    transform: translate(28px, 28px);
+  }
+  & .report-card {
+    position: relative;
+    padding: clamp(26px, 2.6vw, 42px);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+  }
+  & .report-card h3 {
+    font-size: clamp(1.45rem, 1.1vw + 1.1rem, 2.1rem);
+  }
+  & .report-top {
+    letter-spacing: 0.16em;
+  }
+  & .report-stamp {
+    position: absolute;
+    right: clamp(18px, 2vw, 32px);
+    bottom: clamp(16px, 1.6vw, 26px);
+    padding: 6px 12px;
+    border: 2px solid var(--coral-ink);
+    font-size: clamp(0.68rem, 0.15vw + 0.64rem, 0.8rem);
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-ink);
+    opacity: 0.8;
+    transform: rotate(-6deg);
+    pointer-events: none;
+  }
+  & .report-card .checks li {
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+
+  /* Pilot */
+  & #pilot {
+    background: #fff;
+  }
+  & .pilot-grid {
+    align-items: center;
+    gap: clamp(36px, 6vw, 120px);
+  }
+  & .pilot-copy p {
+    font-size: clamp(1rem, 0.2vw + 0.96rem, 1.12rem);
+    line-height: 1.7;
+  }
+  & .pilot-offer {
+    padding-left: clamp(28px, 3vw, 52px);
+    border-left: 3px solid var(--coral);
+    transition:
+      opacity 0.9s var(--ease) var(--d, 0ms),
+      transform 1.1s var(--ease) var(--d, 0ms);
+  }
+  & .pilot-price {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: clamp(20px, 2vw, 30px);
+    font-size: 1rem;
+    letter-spacing: 0;
+  }
+  & .pilot-amount {
+    font-size: clamp(2.8rem, 4vw + 1rem, 5rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+    color: var(--navy);
+  }
+  & .pilot-cur {
+    margin-left: 0.1em;
+    font-size: 0.42em;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+  & .pilot-sep {
+    display: none;
+  }
+  & .pilot-term {
+    font-size: clamp(0.8rem, 0.1vw + 0.78rem, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Founder */
+  & .founder {
+    background: var(--paper);
+  }
+  & .founder-grid {
+    align-items: start;
+    gap: clamp(36px, 6vw, 120px);
+    padding-top: clamp(44px, 5vw, 76px);
+    border-top: 1px solid #c9cfd3;
+  }
+  & .founder-grid p {
+    font-size: clamp(1rem, 0.2vw + 0.96rem, 1.12rem);
+    line-height: 1.75;
+  }
+  & .founder-grid p:first-of-type {
+    color: var(--navy);
+    font-size: clamp(1.2rem, 1.1vw + 0.85rem, 1.6rem);
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+    font-weight: 450;
+  }
+
+  /* Final call to action */
+  & .final-cta {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding: clamp(60px, 7vw, 120px) 0;
+    border-top: 1px solid var(--line);
+    background: #fff;
+    color: var(--navy);
+  }
+  & .cta-topo {
+    z-index: -1;
+  }
+  & .final-cta h2 {
+    max-width: 14em;
+    font-size: clamp(2.1rem, 2.4vw + 1.2rem, 4rem);
+    font-weight: 300;
+    line-height: 1.07;
+    letter-spacing: -0.04em;
+  }
+
+  /* Footer */
+  & .site-footer {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  /* ---------- Inner pages ---------- */
+  & .page-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding: clamp(36px, 4.4vw, 76px) 0 clamp(44px, 5vw, 84px);
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+  & .page-hero::before {
+    z-index: -1;
+  }
+  & .page-hero .breadcrumb {
+    transition: color 0.25s;
+    animation: fade-up 0.8s var(--ease) backwards;
+  }
+  & .page-hero .breadcrumb:hover {
+    color: var(--navy);
+    text-decoration: none;
+  }
+  & .page-hero .eyebrow {
+    animation: fade-up 0.9s var(--ease) 0.08s backwards;
+  }
+  & .page-hero h1 {
+    max-width: 13em;
+    font-size: clamp(2.4rem, 2.6vw + 1.2rem, 4.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.042em;
+    animation: fade-up 1.1s var(--ease) 0.16s backwards;
+  }
+  & .page-hero .lead {
+    max-width: 38em;
+    font-size: clamp(1.02rem, 0.3vw + 0.96rem, 1.2rem);
+    line-height: 1.7;
+    animation: fade-up 1.1s var(--ease) 0.3s backwards;
+  }
+  & .page-hero + .section {
+    background: var(--paper);
+  }
+  & .article-grid {
+    gap: clamp(36px, 6vw, 110px);
+    max-width: 1280px;
+  }
+  & .article section {
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  & .article section:first-of-type {
+    padding-top: 0;
+    border-top: 0;
+  }
+  & .article section + section {
+    margin-top: clamp(28px, 3vw, 44px);
+  }
+  & .article h2 {
+    font-size: clamp(1.35rem, 0.8vw + 1.12rem, 1.9rem);
+  }
+  & .article p,
+  & .article li {
+    font-size: clamp(1rem, 0.15vw + 0.97rem, 1.08rem);
+    line-height: 1.8;
+  }
+  & .notice {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--coral);
+    border-radius: 0;
+    background: #fff;
+    color: var(--navy);
+  }
+  & .sidebar {
+    position: sticky;
+    top: calc(var(--cz-header-height) + 24px);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: #fff;
+  }
+  & .sidebar-price {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    letter-spacing: 0;
+  }
+  & .sidebar-price .pilot-amount {
+    font-size: clamp(2.4rem, 2.2vw + 1.2rem, 3.4rem);
+  }
+  & .contact-panel h2 {
+    font-size: clamp(1.7rem, 1.1vw + 1.3rem, 2.4rem);
+  }
+}
+
+/* ---------- Scroll reveal ---------- */
+/* Hidden only while the script can show it again (class "js") and the fallback is off. */
+html.js:not(.reveal-off) body[data-market] [data-reveal]:not([data-reveal="steps"]):not(.is-in) {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+}
+html.js:not(.reveal-off) body[data-market] [data-reveal="scale"]:not(.is-in) {
+  transform: translate3d(0, 34px, 0) scale(0.97);
+}
+body[data-market] [data-reveal] {
+  transition: opacity 0.9s var(--ease) var(--d, 0ms), transform 1.1s var(--ease) var(--d, 0ms);
+}
+/* The brief: list items tick in one by one, the stamp lands last. */
+html.js:not(.reveal-off) body[data-market] .report-wrap:not(.is-in) .checks li {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+body[data-market] .report-wrap.is-in .checks li:nth-child(1) { transition-delay: 0.5s; }
+body[data-market] .report-wrap.is-in .checks li:nth-child(2) { transition-delay: 0.62s; }
+body[data-market] .report-wrap.is-in .checks li:nth-child(3) { transition-delay: 0.74s; }
+body[data-market] .report-wrap.is-in .checks li:nth-child(4) { transition-delay: 0.86s; }
+html.js:not(.reveal-off) body[data-market] .report-wrap:not(.is-in) .report-stamp {
+  opacity: 0;
+}
+body[data-market] .report-wrap.is-in .report-stamp {
+  animation: stamp 0.7s var(--ease) 1.1s backwards;
+}
+/* Process steps fade in along the rail. */
+html.js:not(.reveal-off) body[data-market] .steps:not(.is-in) .step {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+}
+body[data-market] .steps.is-in .step {
+  transition: opacity 0.9s var(--ease) calc(0.35s + var(--i) * 0.5s), transform 1s var(--ease) calc(0.35s + var(--i) * 0.5s);
+}
+@media (hover: hover) {
+  body[data-market] .steps.is-in:hover .step {
+    opacity: 0.5;
+    transition-delay: 0s;
+    transition-duration: 0.4s;
+  }
+  body[data-market] .steps.is-in:hover .step:hover {
+    opacity: 1;
+  }
+  body[data-market] .steps.is-in .step:hover .step-number {
+    color: var(--coral-ink);
+  }
+}
+
+/* ---------- Logo scroll bar ---------- */
+/* Flush with the right edge. The track is the grey of the round map symbol. The handle is the coral
+   stripe of the logo with slanted ends. A mouse on a wide screen uses it instead of the native bar.
+   Other screens keep the native bar. The page gutter is at least 27px, so the bar covers no content. */
+body[data-market] .logo-scroll {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 900px) {
+  html:has(body[data-market]) {
+    scrollbar-width: none;
+  }
+  html:has(body[data-market])::-webkit-scrollbar {
+    display: none;
+  }
+  body[data-market] .logo-scroll {
+    --p: 0;
+    --th: 80px;
+    display: block;
+    position: fixed;
+    z-index: 70;
+    top: var(--ls-top, 72px);
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    cursor: default;
+  }
+  body[data-market] .logo-scroll.is-idle {
+    display: none;
+  }
+  body[data-market] .ls-track {
+    position: absolute;
+    inset: 0;
+    background: #d9dde0;
+    border-left: 1px solid #c9cfd3;
+    transition: background-color 0.25s;
+  }
+  body[data-market] .logo-scroll:hover .ls-track,
+  body[data-market] .logo-scroll.is-drag .ls-track {
+    background: #cfd5d9;
+  }
+  body[data-market] .ls-thumb {
+    position: absolute;
+    top: calc((100% - var(--th)) * var(--p));
+    right: 2px;
+    width: 12px;
+    height: var(--th);
+    background: var(--coral);
+    /* Slanted ends, like the stripe of the logo. */
+    clip-path: polygon(0 7px, 100% 0, 100% calc(100% - 7px), 0 100%);
+    cursor: grab;
+    transition: background-color 0.2s;
+  }
+  body[data-market] .logo-scroll:hover .ls-thumb {
+    background: #ff6f66;
+  }
+  body[data-market] .logo-scroll.is-drag .ls-thumb {
+    background: #e84d44;
+    cursor: grabbing;
+  }
+}
+
+/* ---------- Page transitions ---------- */
+::view-transition-old(root) {
+  animation: 0.25s ease both vt-out;
+}
+::view-transition-new(root) {
+  animation: 0.55s cubic-bezier(0.22, 1, 0.36, 1) both vt-in;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes word-up {
+  from { transform: translateY(112%); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes map-in {
+  from { opacity: 0; transform: translateY(22px) scale(0.98); }
+}
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes land-in {
+  from { fill-opacity: 0; }
+}
+@keyframes pop {
+  from { transform: scale(0); opacity: 0; }
+}
+@keyframes flow {
+  to { stroke-dashoffset: -18; }
+}
+@keyframes topo-drift {
+  from { transform: translate3d(-1.5%, -1%, 0) scale(1.02); }
+  to { transform: translate3d(1.5%, 1%, 0) scale(1.06); }
+}
+@keyframes stamp {
+  from { opacity: 0; transform: rotate(-6deg) scale(1.6); }
+}
+@keyframes vt-out {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(16px); }
+}
+
+/* ---------- Responsive ---------- */
+@media (min-width: 1001px) {
+  body[data-market] .hero-grid {
+    grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+    column-gap: clamp(28px, 3vw, 64px);
+  }
+}
+@media (max-width: 1000px) {
+  body[data-market] .hero-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  body[data-market] .hero-copy {
+    align-self: stretch;
+  }
+  body[data-market] .hero-copy h1 {
+    max-width: 14em;
+    font-size: clamp(2.5rem, 6.2vw, 3.8rem);
+  }
+  body[data-market] .hero .map-panel {
+    order: 1;
+    align-self: stretch;
+    width: 100%;
+    margin-top: 28px;
+  }
+  body[data-market] .hero-actions {
+    order: 2;
+    margin-top: 28px;
+  }
+}
+@media (max-width: 800px) {
+  /* Steps stack with a vertical rail on the left. */
+  body[data-market] .steps {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-left: 30px;
+  }
+  body[data-market] .steps::before,
+  body[data-market] .steps::after {
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+  body[data-market] .steps::after {
+    left: 3.5px;
+    width: 2px;
+    transform: scaleY(var(--rail, 1));
+    transform-origin: top;
+  }
+  body[data-market] .step {
+    padding: 0 0 38px;
+  }
+  body[data-market] .step::before {
+    top: 6px;
+    left: -30px;
+  }
+  body[data-market] .step p {
+    max-width: 36em;
+  }
+  body[data-market] .section-heading p {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+@media (max-width: 760px) {
+  body[data-market] .map-panel[data-shape="portrait"] .map-city-label {
+    font-size: 25px;
+  }
+  body[data-market] .map-panel.map-rich[data-market] {
+    --panel-ratio: 1.2;
+    min-height: 0;
+  }
+  body[data-market] .map-panel.map-rich[data-shape="portrait"] {
+    --panel-ratio: 0.9;
+  }
+  body[data-market] .hero .trust-strip {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  body[data-market] .hero .trust-strip span {
+    padding: 14px 0;
+  }
+  body[data-market] .hero .trust-strip span::before {
+    width: 28px;
+  }
+  body[data-market] .map-readout {
+    display: none;
+  }
+  body[data-market] .report-wrap::before {
+    transform: translate(6px, 6px);
+  }
+  body[data-market] .report-wrap::after {
+    transform: translate(12px, 12px);
+  }
+  body[data-market] .report-stamp {
+    position: static;
+    display: inline-block;
+    margin-top: 16px;
+  }
+  body[data-market] .sidebar {
+    position: static;
+  }
+}
+@media (hover: none) {
+  body[data-market] .map-readout {
+    display: none;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html:has(body[data-market]) {
+    scroll-behavior: auto;
+  }
+  body[data-market] [data-reveal],
+  body[data-market] .steps .step,
+  body[data-market] .report-card .checks li,
+  body[data-market] .report-stamp {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  body[data-market] .report-stamp {
+    transform: rotate(-6deg) !important;
+  }
+  body[data-market] .benefit::before {
+    transform: scaleX(1);
+    transition: none;
+  }
+  body[data-market] .steps::after {
+    transform: scaleX(1);
+    transition: none;
+  }
+  body[data-market] .steps .step::before {
+    background: var(--coral);
+    border-color: var(--coral);
+    transition: none;
+  }
+  body[data-market] .button,
+  body[data-market] .report-wrap::before,
+  body[data-market] .report-wrap::after,
+  body[data-market] .site-header,
+  body[data-market] .ls-thumb,
+  body[data-market] .ls-track {
+    transition: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

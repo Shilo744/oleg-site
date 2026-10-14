@@ -1,0 +1,10 @@
+---
+const { href = "/", variant } = Astro.props;
+---
+<a class="brand" href={href} aria-label="Atlas home"
+  >{variant !== "v3" && <svg width="35" height="35" viewBox="0 0 36 36" aria-hidden="true"
+    ><path d="M3 30 16 5h7l-5 10-8 15Z" fill="#F45C52"></path><path
+      d="m22 17 11 13H16Z"
+      fill="currentColor"></path></svg>}
+  <span>Atlas<span class="brand-dot">.</span></span></a
+>

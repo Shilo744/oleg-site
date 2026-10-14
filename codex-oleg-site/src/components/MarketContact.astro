@@ -1,0 +1,14 @@
+---
+import { site } from "../data/site.js";
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+---
+<div class="page-hero"><div class="container"><a class="breadcrumb" href={marketPath(market)}>← Back to Atlas</a><div class="eyebrow">{content?.eyebrow || "Let’s talk about your next project"}</div><h1>{content ? content.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>Start with<br />your business.</>}</h1><p class="lead">{content?.lead || "The right opportunity depends on what you do, where you work and the projects you want to take on."}</p></div></div>
+<section class="section"><div class="container article-grid">
+  <div class="contact-panel"><h2>{content?.heading || "Discuss the founding pilot"}</h2><p class="muted">{content?.body || "Tell us about your services, geographical coverage and typical project size. That gives us a useful starting point for a conversation about the pilot."}</p>
+    {content?.nextHeading && <><h2 class="contact-next-heading">{content.nextHeading}</h2><p class="muted">{content.nextBody}</p></>}
+    {site.email ? <a class="button button-primary contact-email" href={`mailto:${site.email}?subject=${encodeURIComponent(`Atlas ${market.country} founding contractor pilot`)}`}>Email {site.email} <span aria-hidden="true">↗</span></a> : <div class="notice"><strong>{content?.pendingTitle || "Contact details are being finalised."}</strong><br />{content?.pendingBody || "This is a local preview. The business email will be added before launch, so pilot enquiries are not being collected here yet."}</div>}
+    <a class="text-link" href={marketPath(market, "/sample-opportunity/")}>{content?.sampleLink || "Explore the sample in the meantime"} <span aria-hidden="true">↗</span></a>
+  </div>
+  <aside class="sidebar"><div class="eyebrow">{content?.pilotEyebrow || "Founding contractor pilot"}</div><h2>{market.pilotPrice}</h2><ul class="checks">{(content?.features || market.pilotFeatures).map((feature) => <li>{feature}</li>)}</ul></aside>
+</div></section>

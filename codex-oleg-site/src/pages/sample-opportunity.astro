@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AtlasDocument from "../components/AtlasDocument.astro";
+import { markets, getMarketContent } from "../data/markets.js";
+const content = getMarketContent(markets.uk);
+---
+<BaseLayout content={content} title="Sample opportunity — hotel restoration" description="Explore an illustrative Atlas hotel restoration opportunity brief: potential HVAC scope, procurement questions and recommended next actions.">
+  <AtlasDocument market={markets.uk} content={content} page="sample" />
+</BaseLayout>

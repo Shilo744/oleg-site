@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import MarketHome from "../components/MarketHome.astro";
+import { markets } from "../data/markets.js";
+import { ukContent } from "../data/content.js";
+---
+
+<BaseLayout content={ukContent}
+  title="Commercial HVAC projects worth pursuing"
+  description="Atlas researches UK commercial HVAC project opportunities, with clear scope, procurement signals and practical next actions. Explore the founding contractor pilot."
+  ><MarketHome market={markets.uk} content={ukContent.home} />
+</BaseLayout>

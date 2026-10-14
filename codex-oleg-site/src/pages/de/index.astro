@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MarketHome from "../../components/MarketHome.astro";
+import { markets } from "../../data/markets.js";
+---
+<BaseLayout marketId="de" title="Commercial HVAC projects worth pursuing in Germany" description="Atlas researches German commercial HVAC project opportunities, with clear scope, procurement signals and practical next actions. Explore the founding contractor pilot.">
+  <MarketHome market={markets.de} />
+</BaseLayout>

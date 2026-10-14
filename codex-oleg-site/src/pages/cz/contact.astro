@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AtlasDocument from "../../components/AtlasDocument.astro";
+import { markets } from "../../data/markets.js";
+import { czechContent } from "../../data/czech-content.js";
+---
+<BaseLayout marketId="cz" content={czechContent} title="Discuss the Czech founding contractor pilot" description="Discuss a four-week Atlas pilot shaped around your HVAC services, coverage, capacity and normal project size. The pilot costs 5,700 Kč total.">
+  <AtlasDocument market={markets.cz} content={czechContent} page="contact" />
+</BaseLayout>

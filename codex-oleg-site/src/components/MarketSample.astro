@@ -1,0 +1,31 @@
+---
+import FinalCTA from "./FinalCTA.astro";
+import { marketPath } from "../data/markets.js";
+const { market, content, finalCta } = Astro.props;
+---
+{content ? <><div class="page-hero"><div class="container"><a class="breadcrumb" href={marketPath(market)}>← Back to Atlas</a><div class="eyebrow">{content.eyebrow}</div><h1>{content.title}</h1><p class="lead">{content.lead.map((line, index) => <>{index > 0 && <br />}{line}</>)}</p></div></div>
+<div class="section"><div class="container article-grid">
+  <article class="article">
+    <div class="notice"><strong>{content.noticeTitle}</strong><br />{content.noticeBody}</div>
+    {content.sections.map((section) => <section>
+      <h2>{section.title}</h2>
+      {section.bullets && <ul>{section.bullets.map(([label, body]) => <li><strong>{label}:</strong> {body}</li>)}</ul>}
+      {section.details && <dl class="detail-list">{section.details.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+      {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
+    </section>)}
+  </article>
+  <aside class="sidebar"><div class="eyebrow">{content.aside.eyebrow}</div><h2>{content.aside.title}</h2><p>{content.aside.body}</p><dl class="detail-list">{content.aside.details.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl><p class="sidebar-followup">{content.aside.followup}</p><a class="button button-primary" href={marketPath(market, "/contact/")}>{content.aside.cta} <span aria-hidden="true">↗</span></a></aside>
+</div></div></> : <><div class="page-hero"><div class="container"><a class="breadcrumb" href={marketPath(market)}>← Back to Atlas</a><div class="eyebrow">Atlas opportunity brief / illustrative sample</div><h1>{market.projectTitle}</h1><p class="lead">{market.sampleLocation}<br />A worked example of turning a project signal into a focused commercial investigation.</p></div></div>
+<div class="section"><div class="container article-grid">
+  <article class="article">
+    <div class="notice"><strong>Illustrative sample — not a live lead.</strong><br />The project, budget and scope below are a fictional demonstration. This is not a report on a named hotel or real project. No tender, contractor appointment or procurement availability has been verified.</div>
+    <section><h2>01 / Project overview</h2><p>Consider a {market.projectValue} restoration of an existing hotel in {market.sampleCity}. In this scenario, refurbishment includes guest accommodation and shared facilities, with replacement of an ageing heating system.</p><p>The {market.projectValue} figure represents the assumed overall project budget, not the value of an HVAC package. A project of this kind could warrant investigation by a commercial HVAC contractor with refurbishment experience.</p></section>
+    <section><h2>02 / Potential HVAC scope</h2><ul><li><strong>Heating plant:</strong> investigate the proposed heat source, plant replacement and distribution requirements.</li><li><strong>Hot water:</strong> clarify demand, storage and any changes to guest-room provision.</li><li><strong>Ventilation:</strong> establish whether kitchens, bathrooms and shared areas require upgrades.</li><li><strong>Controls and commissioning:</strong> check integration requirements and responsibility for testing and handover.</li></ul><p>These are investigation prompts, not confirmed specifications. A new heating system alone would not establish the scope or availability of a subcontract package.</p></section>
+    <section><h2>03 / Organisations & procurement</h2><dl class="detail-list"><div><dt>Client / developer</dt><dd>Not named in this fictional scenario</dd></div><div><dt>Main contractor</dt><dd>Appointment and identity to be verified</dd></div><div><dt>Mechanical designer / consultant</dt><dd>To be established from project documentation</dd></div><div><dt>Procurement route</dt><dd>Unknown — direct appointment or subcontract route to investigate</dd></div><div><dt>Package status</dt><dd>No evidence of an open HVAC package</dd></div></dl></section>
+    <section><h2>04 / What still needs confirming</h2><p>Before committing estimating time, establish the project programme, the actual mechanical scope, whether the package is already placed, and who controls the shortlist. Confirm any trading, insurance or accreditation requirements with the procuring organisation.</p></section>
+    <section><h2>05 / Recommended next action</h2><p><strong>Start with procurement verification.</strong> Identify the appointed main contractor through reliable project documentation, then ask its procurement team whether mechanical services are still being procured and how to register interest.</p><p>If the package remains available and fits your capacity, request scope and programme information before preparing a proposal. If it is already placed, record that outcome and redirect your effort.</p></section>
+    <section><h2>Evidence in a real Atlas brief</h2><p>A researched brief would distinguish source-backed findings, commercial interpretation and outstanding questions, with source links and dates for the underlying claims. This demonstration contains no source-backed project claims.</p></section>
+  </article>
+  <aside class="sidebar"><div class="eyebrow">At a glance</div><h2>Potential commercial HVAC fit</h2><p>A hospitality refurbishment scenario with potential heating and mechanical works.</p><dl class="detail-list"><div><dt>Location</dt><dd>{market.sampleCity}</dd></div><div><dt>Sector</dt><dd>Hospitality</dd></div><div><dt>Assumed total project value</dt><dd>{market.projectValue}</dd></div><div><dt>Research priority</dt><dd>Confirm procurement status</dd></div><div><dt>Report status</dt><dd>Illustrative only</dd></div></dl><p class="sidebar-followup">Want opportunities researched for your business?</p><a class="button button-primary" href={marketPath(market, "/contact/")}>Discuss the pilot <span aria-hidden="true">↗</span></a></aside>
+</div></div></>}
+<FinalCTA market={market} content={finalCta} />

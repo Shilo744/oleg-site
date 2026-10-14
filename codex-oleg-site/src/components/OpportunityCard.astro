@@ -1,0 +1,22 @@
+---
+const { market, content } = Astro.props;
+---
+<article class="report-card">
+  <div class="report-top">
+    <span>{content?.label || "Atlas / opportunity brief"}</span><span>{content?.status || "Illustrative sample"}</span>
+  </div><h3>{market.projectTitle}</h3><p class="location">
+    ⌖ &nbsp; {market.sampleLocation}
+  </p><dl class="report-facts">
+    <div><dt>{content?.sectorLabel || "Sector"}</dt><dd>{content?.sector || "Hospitality"}</dd></div><div>
+      <dt>{content?.scopeLabel || "Potential scope"}</dt><dd>{content?.scope || "Heating & mechanical"}</dd>
+    </div>
+  </dl><ul class="checks">
+    {content ? content.points.map((point) => <li>{point}</li>) : <><li>Heating replacement scenario</li><li>
+      Significant potential mechanical works
+    </li><li>Contractor and procurement checks outlined</li><li>
+      A practical next action to investigate
+    </li></>}
+  </ul><div class="report-bottom">
+    {content?.disclaimer || "Demonstration only. Not a verified live opportunity."}
+  </div>
+</article>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AtlasDocument from "../components/AtlasDocument.astro";
+import { markets, getMarketContent } from "../data/markets.js";
+const content = getMarketContent(markets.uk);
+---
+<BaseLayout content={content} title="Discuss the founding contractor pilot" description="Discuss Atlas’s four-week founding contractor pilot for UK commercial HVAC businesses. Three researched opportunities each week, personally reviewed, for £199 total.">
+  <AtlasDocument market={markets.uk} content={content} page="contact" />
+</BaseLayout>

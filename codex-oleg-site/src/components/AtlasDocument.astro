@@ -1,0 +1,52 @@
+---
+import AtlasCTA from "./AtlasCTA.astro";
+import AtlasPilotOffer from "./AtlasPilotOffer.astro";
+import { site } from "../data/site.js";
+import { marketPath } from "../data/markets.js";
+const { market, content, page } = Astro.props;
+const copy = content[page];
+const isSample = page === "sample";
+const isContact = page === "contact";
+const titleLines = Array.isArray(copy.title) ? copy.title : [copy.title];
+---
+<section class="v3-document-hero">
+  <div class="v3-wrap v3-document-hero-grid">
+    <div>
+      <a class="v3-back" href={marketPath(market)}>← Back to Atlas</a>
+      <p class="v3-kicker">{copy.eyebrow}</p>
+      <h1>{titleLines.map((line, index) => <>{index > 0 && <br />}{line}</>)}</h1>
+      <p class="v3-document-lead">{Array.isArray(copy.lead) ? copy.lead.map((line, index) => <>{index > 0 && <br />}{line}</>) : copy.lead}</p>
+    </div>
+    <figure class="v3-document-photo">
+      <img src={isContact ? market.homeImages.rooftop : isSample ? market.homeImages.mechanical : market.homeImages.architecture} alt="Generated sector illustration, not a photograph of the fictional sample project" width="1536" height="1024" />
+      <figcaption>Generated sector imagery. Not the sample project.</figcaption>
+    </figure>
+  </div>
+</section>
+<section class="v3-document-content">
+  <div class="v3-wrap v3-document-grid">
+    <article class="v3-document-article">
+      {isSample && <div class="v3-document-notice"><strong>{copy.noticeTitle}</strong><p>{copy.noticeBody}</p></div>}
+      {isContact ? <>
+        <section><h2>{copy.heading}</h2><p>{copy.body}</p></section>
+        <section><h2>{copy.nextHeading}</h2><p>{copy.nextBody}</p></section>
+        {site.email ? <a class="v3-button v3-button-coral v3-contact-email" href={`mailto:${site.email}?subject=${encodeURIComponent(`Atlas ${market.country} founding contractor pilot`)}`}>Email {site.email} <span aria-hidden="true">↗</span></a> : <div class="v3-document-notice"><strong>{copy.pendingTitle}</strong><p>{copy.pendingBody}</p></div>}
+        <a class="v3-text-link" href={marketPath(market, "/sample-opportunity/")}>{copy.sampleLink} <span aria-hidden="true">→</span></a>
+      </> : copy.sections.map((section) => <section>
+        <h2>{section.title}</h2>
+        {section.bullets && <ul>{section.bullets.map(([label, body]) => <li><strong>{label}:</strong> {body}</li>)}</ul>}
+        {section.details && <dl class="v3-document-details">{section.details.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+        {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
+      </section>)}
+    </article>
+    {isContact ? <AtlasPilotOffer market={market} features={copy.features} showAction={false} /> : <aside class="v3-document-aside">
+      <p class="v3-kicker">{copy.aside.eyebrow}</p>
+      <h2>{copy.aside.title}</h2>
+      {copy.aside.body && <p>{copy.aside.body}</p>}
+      {copy.aside.points && <ul>{copy.aside.points.map((point) => <li>{point}</li>)}</ul>}
+      {copy.aside.details && <dl class="v3-document-details">{copy.aside.details.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+      {isSample ? <><p class="v3-aside-followup">{copy.aside.followup}</p><a class="v3-button v3-button-coral" href={marketPath(market, "/contact/")}>{copy.aside.cta}</a></> : <a class="v3-text-link" href={marketPath(market, "/sample-opportunity/")}>{copy.aside.link} <span aria-hidden="true">→</span></a>}
+    </aside>}
+  </div>
+</section>
+{!isContact && <AtlasCTA market={market} content={content.home} />}

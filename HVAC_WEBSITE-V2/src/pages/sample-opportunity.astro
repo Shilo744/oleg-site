@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import MarketSample from "../components/MarketSample.astro";
+import { markets } from "../data/markets.js";
+import { ukContent } from "../data/content.js";
+---
+<BaseLayout content={ukContent} title="Sample opportunity — hotel restoration" description="Explore an illustrative Atlas hotel restoration opportunity brief: potential HVAC scope, procurement questions and recommended next actions.">
+  <MarketSample market={markets.uk} content={ukContent.sample} finalCta={ukContent.home.finalCta} diagram={ukContent.diagram} />
+</BaseLayout>

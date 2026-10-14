@@ -1,0 +1,16 @@
+---
+import { marketPath } from "../data/markets.js";
+const { market, content } = Astro.props;
+---
+<section class="final-cta">
+  <div class="container">
+    <h2>{content ? content.title.map((line, index) => <>{index > 0 && <br />}{line}</>) : <>What could your next<br />opportunity look like?</>}</h2><div
+      class="buttons"
+    >
+      <a class="button button-primary" href={marketPath(market, "/sample-opportunity/")}
+        >{content?.primary || "View sample"} <span aria-hidden="true">↗</span></a
+      ><a class="button button-secondary" href={marketPath(market, "/contact/")}
+        >{content?.secondary || "Discuss the pilot"} <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
